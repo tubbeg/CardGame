@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="PhaserUtility.fs" />
+    <Compile Include="Config.fs" />
+    <Compile Include="GameTypes.fs" />
+    <Compile Include="Cardlogic.fs" />
+    <Compile Include="App.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Fable.Browser.Dom" Version="2.2.0" />
+    <PackageReference Include="Fable.Core" Version="3.2.3" />
+  </ItemGroup>
+</Project>
