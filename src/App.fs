@@ -26,24 +26,6 @@ let testPhaserExtension : MyPhaserExtension = new MyPhaserExtension()
 
 
 
-let data =
-    createObj [
-        "todos" ==> "Loads of things"
-        "editedTodo" ==> Option<int>.Some(5)
-        "visibility" ==> "all"
-    ]
-
-let data2 =
-    {| todos = "stuff"
-       editedTodo = Option<string>.Some("maybemaybemaybe")
-       visibility = "all" |}
-
-let myConfig2 =
-    {| width = 800
-
-       visibility = "all" |}
-
-
 let myClass = MagicianTank
 
 type IPixi =
@@ -89,14 +71,23 @@ type IScene (conf: string) =
 
 //mylib.triggerAlert ("Hey I'm calling my js library from Fable > " + mylib.someString)
 
-
-myPhaserLib.preload()
-myPhaserLib.create()
-
-
-
 //myPixi.startAnim()
 
+let startFunctions =
+    let testGame2 = new PhaserGame(phaserGameConfig)
+    //let testScene = new PhaserScene()
+    //let loader = testScene.load()
+    //let testExt = new PhaserSceneExtension()
+    //testExt.preload()
+    //console.log(testExt.addFive 10)
+    //myPhaserLib.preload()
+    //myPhaserLib.create()
+    ()
 
-let plugin = new PhaserLoaderPlugin()
-let testGame2 = new PhaserGame(phaserGameConfig)
+
+
+startFunctions
+
+
+
+

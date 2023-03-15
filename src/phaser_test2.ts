@@ -1,6 +1,5 @@
 import * as Phaser from "phaser";
 
-
 var player;
 var stars;
 var bombs;
