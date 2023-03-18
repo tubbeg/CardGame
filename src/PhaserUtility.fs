@@ -23,17 +23,24 @@ type SceneCallback = (unit -> unit)
 //otherwise you'll need to specify every single data type used
 //by the library/game engine
 
-[<Import("LoaderWrapper", "./PhaserSceneWrapper.js")>]
+[<Import("LoaderPlugin", "phaser")>]
 type LoaderWrapper() =
     class
-        member this.image : string*string -> unit = jsNative
+        do()
+        //member val image : unit = jsNative with get,set(s,d : string*string)
+        member this.image (param1 : string) (param2 : string) =
+            jsNative
     end
 [<Import("SceneWrapper", "./PhaserSceneWrapper.js")>]
 type Scene() =
     class
         abstract member preload: unit -> obj
         default this.preload() : obj = jsNative
-        member this.add : unit -> LoaderWrapper = jsNative
+        abstract member create: unit -> obj
+        default this.create() : obj = jsNative
+        //member val add : LoaderWrapper = jsNative with get, set
+        member val load : LoaderWrapper = jsNative with get, set
+        //member this.add : unit -> LoaderWrapper = jsNative
         member this.getAdd : unit -> obj  = jsNative
         member this.getLoader : unit -> obj = jsNative
         member this.physics = jsNative
@@ -67,10 +74,10 @@ type SceneExt() =
                 ;"red", "assets/particles/red.png"
                 |]
             this.setBaseUrl "http://labs.phaser.io"
-            this.loadImages(arr)
-            //this.add().image("sky", "assets/skies/space3.png")
-            //this.add().image("logo", "assets/sprites/phaser3-logo.png")
-            //this.add().image("sky", "assets/particles/red.png")
+            //this.loadImages(arr)
+            this.load.image "sky" "assets/skies/space3.png"
+            this.load.image "logo" "assets/sprites/phaser3-logo.png"
+            this.load.image "sky" "assets/particles/red.png"
         )
         (*
         member this.create() = (
