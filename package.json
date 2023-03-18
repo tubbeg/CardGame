@@ -4,8 +4,8 @@
     "postinstall": "dotnet tool restore",
     "start": "dotnet fable watch src --run webpack-dev-server",
     "build": "dotnet fable src && webpack",
-    "start2": "npx tsc ./src/phaser_test2.ts && dotnet fable watch src --run webpack-dev-server",
-    "build2": "npx tsc ./src/phaser_test2.ts && dotnet fable src && webpack"
+    "start2": "dotnet fable watch src --run webpack-dev-server",
+    "build2": "dotnet fable src && webpack"
   },
   "devDependencies": {
     "webpack": "^5.75.0",
