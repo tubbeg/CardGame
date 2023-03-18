@@ -85,47 +85,11 @@ type Scene() =
         member val physics : ArcadePhysics = jsNative with get, set
     end
 
-let myFirstJsObj = createObj [
-    "start" ==> 1
-    "end" ==> 0
-]
-
-let myJsObj = createObj [
+let myEmitterConfig = createObj [
     "speed" ==> 100
-    "scale" ==> myFirstJsObj
+    "scale" ==> createObj [
+        "start" ==> 1
+        "end" ==> 0
+    ]
     "blendMode" ==> "ADD"
 ]
-
-type SceneExt() =
-    class
-        inherit Scene()
-        do()
-        override this.preload() = (
-            console.log("running preload in f#")
-            let arr : (string*string) array = [|
-                "sky", "assets/skies/space3.png"
-                ;"logo", "assets/sprites/phaser3-logo.png"
-                ;"red", "assets/particles/red.png"
-                |]
-            this.load.setBaseURL "http://labs.phaser.io"
-            //this.loadImages(arr)
-            this.load.image "sky" "assets/skies/space3.png"
-            this.load.image "logo" "assets/sprites/phaser3-logo.png" //IT WORKS!!!
-            this.load.image "red" "assets/particles/red.png"
-        )
-        
-        override this.create() = (
-            
-            this.add.image 400 300 "sky"
-
-            
-            let myParticles = this.add.particles "red"
-            
-            let emitter = myParticles.createEmitter myJsObj
-            let logo = this.physics.add.image 400 100 "logo"
-            logo.setVelocity 100 200
-            logo.setBounce 1 1
-            logo.setCollideWorldBounds true
-            emitter.startFollow logo
-        )
-    end

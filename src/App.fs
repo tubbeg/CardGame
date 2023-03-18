@@ -13,10 +13,7 @@ let testPhaserExtension  =
     new SceneExt()
 
 let myClass = MagicianTank
-type IPhaser =
-    abstract preload : unit -> unit
-    abstract create : unit -> unit
-    abstract preload2 : (string * string) array -> unit
+
 [<Import("Game", "phaser")>]
 type PhaserGame (config : obj) =
     class

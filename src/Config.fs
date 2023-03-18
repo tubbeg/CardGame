@@ -4,6 +4,7 @@ open PhaserUtility
 open Browser.Dom
 open Fable.Core
 open Fable.Core.JsInterop
+open PhaserSceneExtension
 
 
 type PhaserGameConfig = Config of obj
