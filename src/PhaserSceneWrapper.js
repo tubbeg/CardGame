@@ -12,7 +12,7 @@ class SceneWrapper extends Phaser.Scene{
 
     loadImages(loadArray){
         loadArray.forEach(
-            id,path => this.load.image(id, path)
+            el => this.load.image(el[0], el[1])
         );
     }
 
@@ -48,6 +48,7 @@ class SceneWrapper extends Phaser.Scene{
         return particles.createEmitter(configuration)
     }
 
+    preload(){}
     create ()
     {
         this.add.image(400, 300, 'sky');

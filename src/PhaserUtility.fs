@@ -31,6 +31,8 @@ type LoaderWrapper() =
 [<Import("SceneWrapper", "./PhaserSceneWrapper.js")>]
 type Scene() =
     class
+        abstract member preload: unit -> obj
+        default this.preload() : obj = jsNative
         member this.add : unit -> LoaderWrapper = jsNative
         member this.getAdd : unit -> obj  = jsNative
         member this.getLoader : unit -> obj = jsNative
@@ -57,7 +59,7 @@ type SceneExt() =
     class
         inherit Scene()
         do()
-        member this.preload() = (
+        override this.preload() = (
             console.log("running preload in f#")
             let arr : (string*string) array = [|
                 "sky", "assets/skies/space3.png"
@@ -65,7 +67,7 @@ type SceneExt() =
                 ;"red", "assets/particles/red.png"
                 |]
             this.setBaseUrl "http://labs.phaser.io"
-            this.loadImages(arr) |> ignore
+            this.loadImages(arr)
             //this.add().image("sky", "assets/skies/space3.png")
             //this.add().image("logo", "assets/sprites/phaser3-logo.png")
             //this.add().image("sky", "assets/particles/red.png")
