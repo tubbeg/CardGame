@@ -6,6 +6,8 @@ open Fable.Core
 open Fable.Core.JsInterop
 
 
+type PhaserGameConfig = Config of obj
+
 let createGravity =
     createObj [
         "y" ==> 300
@@ -23,15 +25,13 @@ let createPhysics =
         "arcade" ==> createArcade
     ]
     
-
-
-let phaserGameConfig = 
+let phaserGameConfig (scene : SceneExt) = 
     createObj [
         "type" ==> Auto
         "width" ==> 800
         "height" ==> 600
         "physics" ==> createPhysics
-        "scene" ==> new PhaserScene()
+        "scene" ==> scene
     ]
 
 

@@ -3,31 +3,126 @@ module PhaserUtility
 open Browser.Dom
 open Fable.Core
 open Fable.Core.JsInterop
+open System.IO
 
 
-type SceneCallback = unit -> unit
+//let (+/) (start : string) (endString : string) =
+//    start + (string Path.DirectorySeparatorChar) + endString 
+
+//let skyTuple = "sky", "assets" +/ "sky.png"
+
+//let imagesToLoad  = [|skyTuple|]
+
+//be careful when defining data types used by wrapper classes as
+//some types might generate classes untintentionally
+type SceneCallback = (unit -> unit)
 
 
-(*
-det börjar bli ganska mycket jobb
+//using wrapper classes is the easiest way to work with js in Fable
 
-gör så här istället:
+//otherwise you'll need to specify every single data type used
+//by the library/game engine
 
-1. definiera en vanlig js wrapper class som extendar
-din scene
+[<Import("Stuff", "./PhaserSceneWrapper.js")>]
 
-2. se till att den tar in callback funktioner som argument
-
-3. definiera din funktioner i F# Fable
-
-4. ???
-
-4. common js wrapper + F# callback = profit
-*)
-
-[<Import("PhaserSceneWrapper", "./PhaserSceneWrapper.js")>]
-type PhaserSceneWrapper (preCallback : SceneCallback, createCallback : SceneCallback) =
+type Stuff() =
     class
+        member this.getFive() : unit = jsNative
+    end
+
+[<Import("DummyClass", "./PhaserSceneWrapper.js")>]
+type DummyClass() =
+    class
+        member this.getDummyFive() : unit = jsNative
+    end
+
+[<Import("ImageWithDynamicBody", "phaser.Types.Physics")>]
+type ImageWithDynamicBody =
+    class
+        member this.setVelocity : x:int * y:int -> unit = jsNative
+        member this.setBounce : x:int * y:int -> unit = jsNative
+        member this.setCollideWorldBounds : trueOrFalse:bool -> unit = jsNative
+    end
+
+[<Import("Factory", "phaser.Physics.Arcade")>]
+type  Factory =
+    class
+        member this.image : x:int * y:int * texture:string -> ImageWithDynamicBody = jsNative
+    end
+[<Import("ParticleEmitterConfig", "phaser.Types.GameObjects")>]
+type ParticleEmitterConfig =
+    class
+        member this.startFollow : target:ImageWithDynamicBody -> unit = jsNative
+    end
+[<Import("ParticleEmitterManager", "phaser.GameObjects.Particles")>]
+type  ParticleEmitterManager =
+    class
+        member this.createEmitter : config:obj -> ParticleEmitterConfig = jsNative
+    end
+[<Import("LoaderPlugin", "phaser.Loader")>]
+type  LoaderPlugin =
+    class
+        member this.setBaseURL : url:string -> unit = jsNative
+        member this.image : key:string * url:string -> unit = jsNative
+    end
+
+[<Import("GameObjectFactory", "phaser.GameObjects")>]
+type  GameObjectFactory =
+    class
+        member this.image : x:int * y:int * texture:string -> unit = jsNative
+        member this.particles : texture:string ->  ParticleEmitterManager = jsNative
+    end
+
+[<Import("ArcadePhysics", "phaser.Physics.Arcade")>]
+type ArcadePhysics =
+    class
+        member this.add : unit -> Factory = jsNative
+    end
+//[<Import("GameObjectFactory", "phaser")>]
+//let s : IFact = jsNative
+
+[<Import("SceneWrapper", "./PhaserSceneWrapper.js")>]
+type Scene() =
+    class
+        member this.getAdd : unit ->  GameObjectFactory = jsNative
+        member this.getLoader : unit ->  LoaderPlugin = jsNative
+        member this.physics : unit -> ArcadePhysics = jsNative
+    end
+
+let myFirstJsObj = createObj [
+    "start" ==> 1
+    "end" ==> 0
+]
+
+let myJsObj = createObj [
+    "speed" ==> 100
+    "scale" ==> myFirstJsObj
+    "blendMode" ==> "ADD"
+]
+
+type SceneExt() =
+    class
+        inherit Scene()
+        do()
+        member this.preload() = (
+            console.log("running preload in f#")
+            this.getLoader().setBaseURL("http://labs.phaser.io")
+            this.getLoader().image("sky", "assets/skies/space3.png")
+            this.getLoader().image("logo", "assets/sprites/phaser3-logo.png")
+            this.getLoader().image("red", "assets/particles/red.png")
+        )
+        member this.create() = (
+            
+            this.getAdd().image(400, 300, "sky")
+            let myParticles = this.getAdd().particles("sky")
+            let emitter = myParticles.createEmitter(myJsObj)
+            let logo = this.physics().add().image(400, 100, "logo")
+            logo.setVelocity(100, 200)
+            logo.setBounce(1, 1)
+            logo.setCollideWorldBounds(true)
+            emitter.startFollow(logo)
+        )
+        member this.dummyFunction(number) = number * 5
     end
 
 //let sky: string = importMember "../public/assets/sky.png"
@@ -39,128 +134,13 @@ type IPhaserRender =
     | WebGL
 
 
-[<Import("ParticleEmitterManager", "phaser")>]
-type ParticleEmitterManager () =
-    class
-    end skit i detta
 
-[<Import("LoaderPlugin", "phaser")>]
-type PhaserLoaderPlugin () =
-    class
-        member _.image (key : string) (url : string) : unit = jsNative
-        member _.setBaseURL (url : string) : unit = jsNative
-    end
-
-[<Import("GameObjectFactory", "phaser")>]
-type GameObjectFactory (scene : obj) =
-    class
-        member _.image (x : int) (y : int) (id : string) : unit = jsNative
-        member _.particles (id : string) : unit = jsNative
-    end
-[<Import("Game", "phaser")>]
-type PhaserGame (config : obj) = class end
-
-[<Import("Scene", "phaser")>]
-type PhaserScene () =
-    class
-        abstract load : unit -> PhaserLoaderPlugin
-        default _.load() : PhaserLoaderPlugin = jsNative
-        abstract add : unit -> GameObjectFactory
-        default _.add() : GameObjectFactory = jsNative
-    end
-
-
-type PhaserSceneExtension () as this =
-    inherit PhaserScene()
-    //this is a sort of weird solution...I should be able to call the base class normally
-    //instead of relying on overriding
-    override _.load() =
-        base.load()
-    member _.preload () = (
-        this.load().setBaseURL "http://labs.phaser.io"
-        this.load().image "sky" "assets/skies/space3.png"
-        this.load().image "logo" "assets/sprites/phaser3-logo.png"
-        this.load().image "red" "assets/particles/red.png"
-        //this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
-    )
-    member this.create () = (
-        this.add().image 300 400 "sky"
-        
-        let particles = this.add.particles "red"
-
-        let emitter = createObj[
-
-        ]
-
-    )
-    member this.addFive number = number + 5
-
-(*
-type MyClassImplementation = // 1
-  abstract awesomeInteger: int with get, set
-  abstract isAwesome: unit -> bool
-  
-type PhaserSceneClass = // 2 
-  [<Emit("new $0($1...)")>]
-  abstract Create : awesomeInteger:int ->  MyClassImplementation //= jsNative  // takes a string parameter and does not return anything
-  abstract getPI : unit-> float
-
-[<Import("default", "../public/MyClass.js")>] // 3
-let myClassStatic : MyClass = jsNative
-*)
-
-(*
-function preload ()
-    {
-        this.load.setBaseURL('http://labs.phaser.io');
-
-        this.load.image('sky', 'assets/skies/space3.png');
-        this.load.image('logo', 'assets/sprites/phaser3-logo.png');
-        this.load.image('red', 'assets/particles/red.png');
-    }
-
-    function create ()
-    {
-        this.add.image(400, 300, 'sky');
-
-        var particles = this.add.particles('red');
-
-        var emitter = particles.createEmitter({
-            speed: 100,
-            scale: { start: 1, end: 0 },
-            blendMode: 'ADD'
-        });
-
-        var logo = this.physics.add.image(400, 100, 'logo');
-
-        logo.setVelocity(100, 200);
-        logo.setBounce(1, 1);
-        logo.setCollideWorldBounds(true);
-
-        emitter.startFollow(logo);
-    }*)
-
-type MyPhaserExtension =
-    inherit PhaserScene
-    new() = {}
-    // We can do something with data before sending it to the base class
-    //override _.update(data) =
-    //    base.update(data)
-    member this.preload = ()
-    member this.create = ()
-
-
-
-//[<Import("Phaser.Scene", "phaser")>]
-//let phaserScene : PhaserScene = jsNative
-
-
-
-[<Import("Phaser.AUTO", "phaser")>]
+[<Import("AUTO", "phaser")>]
 let phaserAuto: IPhaserRender = jsNative
 
-[<Import("Phaser.CANVAS", "phaser")>]
+[<Import("CANVAS", "phaser")>]
 let phaserCanvas: IPhaserRender = jsNative
 
-[<Import("Phaser.AUTO", "phaser")>]
+[<Import("AUTO", "phaser")>]
 let phaserWebGL: IPhaserRender = jsNative
+

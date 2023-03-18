@@ -17,8 +17,12 @@ let myWebGL = phaserWebGL
 *)
 //let testPhaserScene = phaserScene
 
+let preloadCallback() = (console.log("hello there, i am preloading"))
 
-let testPhaserExtension : MyPhaserExtension = new MyPhaserExtension()
+let createCallback() = (console.log("and now i am creating stuff i think"))
+
+let testPhaserExtension  =
+    new SceneExt()
 
 //let resultOfExtension = testPhaserExtension.addFive 10
 
@@ -60,7 +64,17 @@ let mylib: IAlert = jsNative
 [<ImportAll("./phaser_test2.js")>]
 let myPhaserLib: IPhaser = jsNative
 
+[<Import("Game", "phaser")>]
+type PhaserGame (config : obj) =
+    class
+    end
 
+
+type IBuildConfig = obj
+
+
+[<Import("buildConfig", "./BuildPhaserConfig.js")>]
+let configBuilder (scene : obj) : IBuildConfig = jsNative
 
 (*
 [<Import("default", "phaser")>]
@@ -73,20 +87,24 @@ type IScene (conf: string) =
 
 //myPixi.startAnim()
 
-let startFunctions =
-    let testGame2 = new PhaserGame(phaserGameConfig)
-    //let testScene = new PhaserScene()
-    //let loader = testScene.load()
-    //let testExt = new PhaserSceneExtension()
-    //testExt.preload()
-    //console.log(testExt.addFive 10)
-    //myPhaserLib.preload()
-    //myPhaserLib.create()
-    ()
+let testSceneExt = new SceneExt()
+let result = testSceneExt.dummyFunction 5
+console.log(result)
+let testGame2 =
+    new PhaserGame(configBuilder testSceneExt)
+let testDummy = new DummyClass()
+console.log(testDummy.getDummyFive())
+//let testScene = new PhaserScene()
+//let loader = testScene.load()
+//let testExt = new PhaserSceneExtension()
+//testExt.preload()
+//console.log(testExt.addFive 10)
+//myPhaserLib.preload()
+//myPhaserLib.create()
 
 
 
-startFunctions
+
 
 
 
