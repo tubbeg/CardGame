@@ -5,38 +5,69 @@ open Fable.Core
 open Fable.Core.JsInterop
 open System.IO
 
+type IPhaserRender = 
+    | Auto
+    | Canvas
+    | WebGL
 
-//let (+/) (start : string) (endString : string) =
-//    start + (string Path.DirectorySeparatorChar) + endString 
+[<Import("ParticleEmitter", "phaser")>]
+type ParticleEmitter() =
+    class
+        do()
+        member this.startFollow gameObject = jsNative
+    end
+[<Import("ImageWithDynamicBody", "phaser")>]
+type  ImageWithDynamicBody() =
+    class
+        do()
+        member this.setVelocity x y = jsNative
+        member this.setBounce x y = jsNative
+        member this.setCollideWorldBounds foo = jsNative
+    end
 
-//let skyTuple = "sky", "assets" +/ "sky.png"
+[<Import("AUTO", "phaser")>]
+let phaserAuto: IPhaserRender = jsNative
+[<Import("Factory", "phaser")>]
+type  Factory() =
+    class
+        do()
+        member this.image x y id : ImageWithDynamicBody =
+            jsNative
+    end
 
-//let imagesToLoad  = [|skyTuple|]
+[<Import("ArcadePhysics", "phaser")>]
+type ArcadePhysics() =
+    class
+        do()
+        member val add : Factory = jsNative with get, set
+    end
 
-//be careful when defining data types used by wrapper classes as
-//some types might generate classes untintentionally
-type SceneCallback = (unit -> unit)
+
+[<Import("ParticleEmitterManager", "phaser")>]
+type ParticleEmitterManager() =
+    class
+        do()
+        member this.createEmitter (config: obj) : ParticleEmitter =
+            jsNative
+    end
 
 
-//using wrapper classes is the easiest way to work with js in Fable
-
-//otherwise you'll need to specify every single data type used
-//by the library/game engine
 [<Import("GameObjectFactory", "phaser")>]
 type GameObjectFactory() =
     class
         do()
-        //member val image : unit = jsNative with get,set(s,d : string*string)
         member this.image (x : int) (y : int) (id: string) =
             jsNative
-        member this.particles (id: string) =
+        member this.particles (id: string) : ParticleEmitterManager =
             jsNative
     end
+
+
+
 [<Import("LoaderPlugin", "phaser")>]
 type LoaderWrapper() =
     class
         do()
-        //member val image : unit = jsNative with get,set(s,d : string*string)
         member this.image (param1 : string) (param2 : string) =
             jsNative
         member this.setBaseURL (url : string) =
@@ -49,18 +80,11 @@ type Scene() =
         default this.preload() : obj = jsNative
         abstract member create: unit -> obj
         default this.create() : obj = jsNative
-        //member val add : LoaderWrapper = jsNative with get, set
         member val load : LoaderWrapper = jsNative with get, set //THESE NEED TO BE PROPERTIES!! ALSO IMPORTANT
         member val add : GameObjectFactory = jsNative with get, set
-        member val physics : GameObjectFactory = jsNative with get, set //not gameobjectfactory
-        //member this.add : unit -> LoaderWrapper = jsNative
+        member val physics : ArcadePhysics = jsNative with get, set //not gameobjectfactory
         member this.getAdd : unit -> obj  = jsNative
         member this.getLoader : unit -> obj = jsNative
-        //member this.physics = jsNative
-        member this.setBaseUrl (url : string) = jsNative
-        member this.setAddImage (x,y, texture) : (int*int*string) -> unit = jsNative
-        member this.addParticles texture : string -> obj = jsNative
-        member this.createEmitter (particles, texture) : (string*string) -> unit = jsNative
     end
 
 let myFirstJsObj = createObj [
@@ -97,35 +121,13 @@ type SceneExt() =
             this.add.image 400 300 "sky"
 
             
-            let myParticles = this.add.particles "sky"
-            ()
-            //let emitter = myParticles.createEmitter(myJsObj)
+            let myParticles = this.add.particles "red"
             
-            //let logo = this.physics.add.image(400, 100, "logo")
-            //()
-            //logo.setVelocity(100, 200)
-            //logo.setBounce(1, 1)
-            //logo.setCollideWorldBounds(true)
-            //emitter.startFollow(logo))*)
+            let emitter = myParticles.createEmitter myJsObj
+            let logo = this.physics.add.image 400 100 "logo"
+            logo.setVelocity 100 200
+            logo.setBounce 1 1
+            logo.setCollideWorldBounds true
+            emitter.startFollow logo
         )
     end
-
-//let sky: string = importMember "../public/assets/sky.png"
-// JS: import { myString } from "my-lib"
-
-type IPhaserRender = 
-    | Auto
-    | Canvas
-    | WebGL
-
-
-
-[<Import("AUTO", "phaser")>]
-let phaserAuto: IPhaserRender = jsNative
-
-[<Import("CANVAS", "phaser")>]
-let phaserCanvas: IPhaserRender = jsNative
-
-[<Import("AUTO", "phaser")>]
-let phaserWebGL: IPhaserRender = jsNative
-
