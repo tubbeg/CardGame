@@ -35,58 +35,23 @@ type DummyClass() =
     class
         member this.getDummyFive() : unit = jsNative
     end
-
-[<Import("ImageWithDynamicBody", "phaser.Types.Physics")>]
-type ImageWithDynamicBody =
-    class
-        member this.setVelocity : x:int * y:int -> unit = jsNative
-        member this.setBounce : x:int * y:int -> unit = jsNative
-        member this.setCollideWorldBounds : trueOrFalse:bool -> unit = jsNative
-    end
-
-[<Import("Factory", "phaser.Physics.Arcade")>]
-type  Factory =
-    class
-        member this.image : x:int * y:int * texture:string -> ImageWithDynamicBody = jsNative
-    end
-[<Import("ParticleEmitterConfig", "phaser.Types.GameObjects")>]
-type ParticleEmitterConfig =
-    class
-        member this.startFollow : target:ImageWithDynamicBody -> unit = jsNative
-    end
-[<Import("ParticleEmitterManager", "phaser.GameObjects.Particles")>]
-type  ParticleEmitterManager =
-    class
-        member this.createEmitter : config:obj -> ParticleEmitterConfig = jsNative
-    end
-[<Import("LoaderPlugin", "phaser.Loader")>]
-type  LoaderPlugin =
-    class
-        member this.setBaseURL : url:string -> unit = jsNative
-        member this.image : key:string * url:string -> unit = jsNative
-    end
-
-[<Import("GameObjectFactory", "phaser.GameObjects")>]
-type  GameObjectFactory =
-    class
-        member this.image : x:int * y:int * texture:string -> unit = jsNative
-        member this.particles : texture:string ->  ParticleEmitterManager = jsNative
-    end
-
-[<Import("ArcadePhysics", "phaser.Physics.Arcade")>]
-type ArcadePhysics =
-    class
-        member this.add : unit -> Factory = jsNative
-    end
 //[<Import("GameObjectFactory", "phaser")>]
 //let s : IFact = jsNative
+
+[<Import("SceneWrapper", "phaser")>]
+type Scene() =
+    class
+        member this.getAdd : unit -> obj  = jsNative
+        member this.getLoader : unit -> obj = jsNative
+        member this.physics = jsNative
+    end
 
 [<Import("SceneWrapper", "./PhaserSceneWrapper.js")>]
 type Scene() =
     class
-        member this.getAdd : unit ->  GameObjectFactory = jsNative
-        member this.getLoader : unit ->  LoaderPlugin = jsNative
-        member this.physics : unit -> ArcadePhysics = jsNative
+        member this.getAdd : unit -> obj  = jsNative
+        member this.getLoader : unit -> obj = jsNative
+        member this.physics = jsNative
     end
 
 let myFirstJsObj = createObj [
