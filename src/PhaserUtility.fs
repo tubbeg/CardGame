@@ -22,7 +22,16 @@ type SceneCallback = (unit -> unit)
 
 //otherwise you'll need to specify every single data type used
 //by the library/game engine
-
+[<Import("GameObjectFactory", "phaser")>]
+type GameObjectFactory() =
+    class
+        do()
+        //member val image : unit = jsNative with get,set(s,d : string*string)
+        member this.image (x : int) (y : int) (id: string) =
+            jsNative
+        member this.particles (id: string) =
+            jsNative
+    end
 [<Import("LoaderPlugin", "phaser")>]
 type LoaderWrapper() =
     class
@@ -30,21 +39,24 @@ type LoaderWrapper() =
         //member val image : unit = jsNative with get,set(s,d : string*string)
         member this.image (param1 : string) (param2 : string) =
             jsNative
+        member this.setBaseURL (url : string) =
+            jsNative
     end
 [<Import("SceneWrapper", "./PhaserSceneWrapper.js")>]
 type Scene() =
     class
-        abstract member preload: unit -> obj
+        abstract member preload: unit -> obj //DO NOT FORGET TO OVERRIDE. VERY IMPORTANT
         default this.preload() : obj = jsNative
         abstract member create: unit -> obj
         default this.create() : obj = jsNative
         //member val add : LoaderWrapper = jsNative with get, set
-        member val load : LoaderWrapper = jsNative with get, set
+        member val load : LoaderWrapper = jsNative with get, set //THESE NEED TO BE PROPERTIES!! ALSO IMPORTANT
+        member val add : GameObjectFactory = jsNative with get, set
+        member val physics : GameObjectFactory = jsNative with get, set //not gameobjectfactory
         //member this.add : unit -> LoaderWrapper = jsNative
         member this.getAdd : unit -> obj  = jsNative
         member this.getLoader : unit -> obj = jsNative
-        member this.physics = jsNative
-        member this.loadImages arr : (string*string) array -> unit = jsNative
+        //member this.physics = jsNative
         member this.setBaseUrl (url : string) = jsNative
         member this.setAddImage (x,y, texture) : (int*int*string) -> unit = jsNative
         member this.addParticles texture : string -> obj = jsNative
@@ -73,25 +85,29 @@ type SceneExt() =
                 ;"logo", "assets/sprites/phaser3-logo.png"
                 ;"red", "assets/particles/red.png"
                 |]
-            this.setBaseUrl "http://labs.phaser.io"
+            this.load.setBaseURL "http://labs.phaser.io"
             //this.loadImages(arr)
             this.load.image "sky" "assets/skies/space3.png"
             this.load.image "logo" "assets/sprites/phaser3-logo.png" //IT WORKS!!!
             this.load.image "red" "assets/particles/red.png"
         )
-        (*
-        member this.create() = (
+        
+        override this.create() = (
             
-            this.setAddImage (400, 300, "sky")
+            this.add.image 400 300 "sky"
 
             
-            let myParticles = this.getAdd().particles("sky")
-            let emitter = myParticles.createEmitter(myJsObj)
-            let logo = this.physics().add().image(400, 100, "logo")
-            logo.setVelocity(100, 200)
-            logo.setBounce(1, 1)
-            logo.setCollideWorldBounds(true)
-            emitter.startFollow(logo))*)
+            let myParticles = this.add.particles "sky"
+            ()
+            //let emitter = myParticles.createEmitter(myJsObj)
+            
+            //let logo = this.physics.add.image(400, 100, "logo")
+            //()
+            //logo.setVelocity(100, 200)
+            //logo.setBounce(1, 1)
+            //logo.setCollideWorldBounds(true)
+            //emitter.startFollow(logo))*)
+        )
     end
 
 //let sky: string = importMember "../public/assets/sky.png"
