@@ -7,6 +7,7 @@ open Cardlogic
 open GameTypes
 open GameConfig
 open PhaserUtility
+open PhaserSceneExtension
 
 (*
 let myAuto = phaserAuto

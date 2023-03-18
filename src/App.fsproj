@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="PhaserUtility.fs" />
+    <Compile Include="PhaserSceneExtension.fs" />
     <Compile Include="Config.fs" />
     <Compile Include="GameTypes.fs" />
     <Compile Include="Cardlogic.fs" />

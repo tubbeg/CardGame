@@ -1,7 +1,7 @@
 import { Union } from "./fable_modules/fable-library.4.0.0-theta-018/Types.js";
 import { class_type, union_type } from "./fable_modules/fable-library.4.0.0-theta-018/Reflection.js";
 import { some } from "./fable_modules/fable-library.4.0.0-theta-018/Option.js";
-import { SceneWrapper } from "./PhaserSceneWrapper.js";
+import { Scene } from "phaser";
 
 export class IPhaserRender extends Union {
     constructor(tag, fields) {
@@ -29,7 +29,7 @@ export const myJsObj = {
     blendMode: "ADD",
 };
 
-export class SceneExt extends SceneWrapper {
+export class SceneExt extends Scene {
     constructor() {
         super();
     }
@@ -62,7 +62,7 @@ export class SceneExt extends SceneWrapper {
 }
 
 export function SceneExt$reflection() {
-    return class_type("PhaserUtility.SceneExt", void 0, SceneExt, class_type("PhaserUtility.Scene", void 0, SceneWrapper));
+    return class_type("PhaserUtility.SceneExt", void 0, SceneExt, class_type("PhaserUtility.Scene", void 0, Scene));
 }
 
 export function SceneExt_$ctor() {

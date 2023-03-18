@@ -73,7 +73,7 @@ type LoaderWrapper() =
         member this.setBaseURL (url : string) =
             jsNative
     end
-[<Import("SceneWrapper", "./PhaserSceneWrapper.js")>]
+[<Import("Scene", "phaser")>]
 type Scene() =
     class
         abstract member preload: unit -> obj //DO NOT FORGET TO OVERRIDE. VERY IMPORTANT
@@ -82,9 +82,7 @@ type Scene() =
         default this.create() : obj = jsNative
         member val load : LoaderWrapper = jsNative with get, set //THESE NEED TO BE PROPERTIES!! ALSO IMPORTANT
         member val add : GameObjectFactory = jsNative with get, set
-        member val physics : ArcadePhysics = jsNative with get, set //not gameobjectfactory
-        member this.getAdd : unit -> obj  = jsNative
-        member this.getLoader : unit -> obj = jsNative
+        member val physics : ArcadePhysics = jsNative with get, set
     end
 
 let myFirstJsObj = createObj [
