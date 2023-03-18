@@ -23,35 +23,23 @@ type SceneCallback = (unit -> unit)
 //otherwise you'll need to specify every single data type used
 //by the library/game engine
 
-[<Import("Stuff", "./PhaserSceneWrapper.js")>]
-
-type Stuff() =
+[<Import("LoaderWrapper", "./PhaserSceneWrapper.js")>]
+type LoaderWrapper() =
     class
-        member this.getFive() : unit = jsNative
+        member this.image : string*string -> unit = jsNative
     end
-
-[<Import("DummyClass", "./PhaserSceneWrapper.js")>]
-type DummyClass() =
-    class
-        member this.getDummyFive() : unit = jsNative
-    end
-//[<Import("GameObjectFactory", "phaser")>]
-//let s : IFact = jsNative
-
-[<Import("SceneWrapper", "phaser")>]
-type Scene() =
-    class
-        member this.getAdd : unit -> obj  = jsNative
-        member this.getLoader : unit -> obj = jsNative
-        member this.physics = jsNative
-    end
-
 [<Import("SceneWrapper", "./PhaserSceneWrapper.js")>]
 type Scene() =
     class
+        member this.add : unit -> LoaderWrapper = jsNative
         member this.getAdd : unit -> obj  = jsNative
         member this.getLoader : unit -> obj = jsNative
         member this.physics = jsNative
+        member this.loadImages arr : (string*string) array -> unit = jsNative
+        member this.setBaseUrl (url : string) = jsNative
+        member this.setAddImage (x,y, texture) : (int*int*string) -> unit = jsNative
+        member this.addParticles texture : string -> obj = jsNative
+        member this.createEmitter (particles, texture) : (string*string) -> unit = jsNative
     end
 
 let myFirstJsObj = createObj [
@@ -71,23 +59,30 @@ type SceneExt() =
         do()
         member this.preload() = (
             console.log("running preload in f#")
-            this.getLoader().setBaseURL("http://labs.phaser.io")
-            this.getLoader().image("sky", "assets/skies/space3.png")
-            this.getLoader().image("logo", "assets/sprites/phaser3-logo.png")
-            this.getLoader().image("red", "assets/particles/red.png")
+            let arr : (string*string) array = [|
+                "sky", "assets/skies/space3.png"
+                ;"logo", "assets/sprites/phaser3-logo.png"
+                ;"red", "assets/particles/red.png"
+                |]
+            this.setBaseUrl "http://labs.phaser.io"
+            this.loadImages(arr) |> ignore
+            //this.add().image("sky", "assets/skies/space3.png")
+            //this.add().image("logo", "assets/sprites/phaser3-logo.png")
+            //this.add().image("sky", "assets/particles/red.png")
         )
+        (*
         member this.create() = (
             
-            this.getAdd().image(400, 300, "sky")
+            this.setAddImage (400, 300, "sky")
+
+            
             let myParticles = this.getAdd().particles("sky")
             let emitter = myParticles.createEmitter(myJsObj)
             let logo = this.physics().add().image(400, 100, "logo")
             logo.setVelocity(100, 200)
             logo.setBounce(1, 1)
             logo.setCollideWorldBounds(true)
-            emitter.startFollow(logo)
-        )
-        member this.dummyFunction(number) = number * 5
+            emitter.startFollow(logo))*)
     end
 
 //let sky: string = importMember "../public/assets/sky.png"

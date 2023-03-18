@@ -88,12 +88,8 @@ type IScene (conf: string) =
 //myPixi.startAnim()
 
 let testSceneExt = new SceneExt()
-let result = testSceneExt.dummyFunction 5
-console.log(result)
 let testGame2 =
     new PhaserGame(configBuilder testSceneExt)
-let testDummy = new DummyClass()
-console.log(testDummy.getDummyFive())
 //let testScene = new PhaserScene()
 //let loader = testScene.load()
 //let testExt = new PhaserSceneExtension()
