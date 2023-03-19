@@ -16,12 +16,3 @@ export function IPhaserRender$reflection() {
     return union_type("PhaserUtility.IPhaserRender", [], IPhaserRender, () => [[], [], []]);
 }
 
-export const myEmitterConfig = {
-    speed: 100,
-    scale: {
-        start: 1,
-        end: 0,
-    },
-    blendMode: "ADD",
-};
-

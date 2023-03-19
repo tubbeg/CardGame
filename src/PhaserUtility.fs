@@ -10,6 +10,13 @@ type IPhaserRender =
     | Canvas
     | WebGL
 
+
+//Might need this for passing data between scenes
+[<Import("EventEmitter", "phaser")>]
+type EventEmitter() =
+    class
+    end
+
 [<Import("ParticleEmitter", "phaser")>]
 type ParticleEmitter() =
     class
@@ -52,16 +59,6 @@ type ParticleEmitterManager() =
     end
 
 
-[<Import("GameObjectFactory", "phaser")>]
-type GameObjectFactory() =
-    class
-        do()
-        member this.image (x : int) (y : int) (id: string) =
-            jsNative
-        member this.particles (id: string) : ParticleEmitterManager =
-            jsNative
-    end
-
 
 
 [<Import("LoaderPlugin", "phaser")>]
@@ -73,6 +70,38 @@ type LoaderWrapper() =
         member this.setBaseURL (url : string) =
             jsNative
     end
+
+[<Import("InputPlugin", "phaser")>]
+type InputPlugin() =
+    class
+    end
+
+[<Import("Sprite", "phaser")>]
+type Sprite() =
+    class
+        do()
+        member this.setInteractive() : unit =
+            jsNative
+        member this.on (event : string) (callback : (unit -> unit)) : unit =
+            jsNative
+        member this.setTint (topLeft : int ) : unit =
+            jsNative
+        member this.clearTint() : unit =
+            jsNative//sadasiijdoa
+    end
+
+[<Import("GameObjectFactory", "phaser")>]
+type GameObjectFactory() =
+    class
+        do()
+        member this.sprite (x:int) (y:int) (texture : string) : Sprite =
+            jsNative
+        member this.image (x : int) (y : int) (id: string) =
+            jsNative
+        member this.particles (id: string) : ParticleEmitterManager =
+            jsNative
+    end
+
 [<Import("Scene", "phaser")>]
 type Scene() =
     class
@@ -80,16 +109,12 @@ type Scene() =
         default this.preload() : obj = jsNative
         abstract member create: unit -> obj
         default this.create() : obj = jsNative
+        abstract member update: unit -> obj
+        default this.update() : obj = jsNative
         member val load : LoaderWrapper = jsNative with get, set //THESE NEED TO BE PROPERTIES!! ALSO IMPORTANT
         member val add : GameObjectFactory = jsNative with get, set
         member val physics : ArcadePhysics = jsNative with get, set
+        member val input :  InputPlugin = jsNative with get, set
     end
 
-let myEmitterConfig = createObj [
-    "speed" ==> 100
-    "scale" ==> createObj [
-        "start" ==> 1
-        "end" ==> 0
-    ]
-    "blendMode" ==> "ADD"
-]
+

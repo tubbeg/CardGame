@@ -8,6 +8,8 @@
     <Compile Include="Config.fs" />
     <Compile Include="GameTypes.fs" />
     <Compile Include="Cardlogic.fs" />
+    <Compile Include="GameplayLoop.fs" />
+    <Compile Include="BattleScene.fs" />
     <Compile Include="App.fs" />
   </ItemGroup>
   <ItemGroup>

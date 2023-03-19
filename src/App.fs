@@ -8,9 +8,10 @@ open GameTypes
 open GameConfig
 open PhaserUtility
 open PhaserSceneExtension
+open BattleScene
 
 let testPhaserExtension  =
-    new SceneExt()
+    new BattleScene()
 
 let myClass = MagicianTank
 
