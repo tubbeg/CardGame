@@ -9,20 +9,18 @@ open GameConfig
 open PhaserUtility
 open PhaserSceneExtension
 open BattleScene
+open GameplayLoop
 
-let testPhaserExtension  =
+let myScene  =
     new BattleScene()
-
-let myClass = MagicianTank
-
 [<Import("Game", "phaser")>]
 type PhaserGame (config : obj) =
     class
     end
 
+let testState =
+    new BattleStateMachine("bob the player")
 
-
-let testSceneExt = new SceneExt()
 let testGame2 =
-    new PhaserGame(buildConfig testPhaserExtension)
+    new PhaserGame(buildConfig myScene)
 

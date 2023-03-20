@@ -14,34 +14,24 @@ type Card =
 
 type Deck = Cards of Card array
 
+type NPC = {
+    Id : string;
+    Health : int;
+    Mana : int
+}
+and Player = NPC
+and Enemies = NPC array
 type Passives =
     | Passive1
     | Passive2
 
-
-
 type GameplayStates =
     | Init
-    | CardStatusEffect
-    | EnemyStatusEffect
     | EnemyTurn
-    | Death
+    | PlayerTurn
+and EndGame =
     | Win
-    | Action of UpdateEntities
-    | PlayerActions of PlayerStates
-and UpdateEntities =
-    | GameAction
-    | UpdatePlayerStatus
-    | UpdateEnemyStatus
-and PlayerStates =
-    | Await
+    | GameOver
+and PlayerInput =
+    | PlayCard of Card
     | EndTurn
-    | PlayCard
-
-type PlayerAction =
-    | EndTurn
-    | ChooseCard
-
-type Acceptance =
-    | OK
-    | NotOK
