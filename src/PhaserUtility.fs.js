@@ -1,8 +1,8 @@
-import { Union } from "./fable_modules/fable-library.4.0.0-theta-018/Types.js";
-import { union_type } from "./fable_modules/fable-library.4.0.0-theta-018/Reflection.js";
+import { Union } from "./fable_modules/fable-library.4.0.1/Types.js";
+import { union_type } from "./fable_modules/fable-library.4.0.1/Reflection.js";
 
 export class IPhaserRender extends Union {
-    constructor(tag, fields) {
+    "constructor"(tag, fields) {
         super();
         this.tag = tag;
         this.fields = fields;

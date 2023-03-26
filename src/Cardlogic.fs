@@ -5,6 +5,8 @@ let foo number = number * number
 
 
 
+
+
 (*Need minimum 3 scenes:
 - Startup (menu)
 - Running (actualy gameplay)

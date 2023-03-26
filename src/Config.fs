@@ -6,7 +6,12 @@ open Fable.Core
 open Fable.Core.JsInterop
 open PhaserSceneExtension
 
+
+let createContainer = createObj ["createContainer" ==> true]
+
 let buildConfig scene = createObj [
+    "parent" ==> "phaser"
+    "dom" ==> createContainer
     "type" ==> Auto
     "width" ==> 800
     "height" ==> 600
@@ -21,6 +26,3 @@ let buildConfig scene = createObj [
     ]
     "scene" ==> scene
 ]
-
-
-

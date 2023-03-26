@@ -25,8 +25,40 @@ type Passives =
     | Passive1
     | Passive2
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 type GameplayStates =
-    | Init
+    //| Init
     | EnemyTurn
     | PlayerTurn
 and EndGame =
@@ -35,3 +67,4 @@ and EndGame =
 and PlayerInput =
     | PlayCard of Card
     | EndTurn
+    | Idle

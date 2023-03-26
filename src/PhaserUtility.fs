@@ -76,6 +76,62 @@ type InputPlugin() =
     class
     end
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 [<Import("Sprite", "phaser")>]
 type Sprite() =
     class
@@ -90,6 +146,13 @@ type Sprite() =
             jsNative//sadasiijdoa
     end
 
+
+
+
+
+
+
+
 [<Import("GameObjectFactory", "phaser")>]
 type GameObjectFactory() =
     class
@@ -99,6 +162,8 @@ type GameObjectFactory() =
         member this.image (x : int) (y : int) (id: string) =
             jsNative
         member this.particles (id: string) : ParticleEmitterManager =
+            jsNative
+        member this.dom (x:int) (y:int) (id:obj) : obj =
             jsNative
     end
 

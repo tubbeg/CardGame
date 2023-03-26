@@ -11,6 +11,7 @@ open PhaserSceneExtension
 open BattleScene
 open GameplayLoop
 
+
 let myScene  =
     new BattleScene()
 [<Import("Game", "phaser")>]
@@ -18,9 +19,26 @@ type PhaserGame (config : obj) =
     class
     end
 
-let testState =
-    new BattleStateMachine("bob the player")
 
-let testGame2 =
+let testState() =
+    console.log("Creating machine")
+    let machine = new BattleStateMachine("bob the player")
+    console.log("Created machine")
+
+
+
+let testGame2() =
     new PhaserGame(buildConfig myScene)
+
+
+
+
+[<Import("initReact", "./testReact.jsx")>]
+let initReact() = jsNative
+
+
+let runGame =
+    initReact()
+    testState()
+    testGame2()
 
