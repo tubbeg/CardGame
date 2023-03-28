@@ -26,37 +26,6 @@ type Passives =
     | Passive2
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 type GameplayStates =
     //| Init
     | EnemyTurn

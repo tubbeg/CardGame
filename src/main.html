@@ -1,15 +1,31 @@
 <!doctype html>
 <html>
 <head>
-  <title>Fable</title>
+  <title>CardGame</title>
   <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
-  <link rel="stylesheet" href="//cdn.materialdesignicons.com/4.4.95/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"/>
+  	<!-- include rpgui -->
+	<link href="html-assets/rpgui.min.css" rel="stylesheet" type="text/css" >
+	<script src="html-assets/rpgui.min.js"></script>
 </head>
 <body>
-    <p>Fable is running</p>
-    <div id="root"></div>
+    <!-- IMPORTANT!!!! WHEN USING PARCEL!!!
+    
+    IF YOU HAVE MULTIPLE ENTRY POINTS (SOURCES)
+
+    THEN YOU NEED TO SPECIFY THE ROUTE IN YOUR BROWSER URL
+
+    NOT OK -> http://localhost:3000/
+
+    OK-> http://localhost:3000/main.html
+
+
+    
+    -->
+    <p>CardGame is running</p>
+    <div id="myPhaser"></div>
     <script  type="module" src="App.fs.js"></script>
+</div>
 </body>
 </html>

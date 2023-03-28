@@ -31,14 +31,7 @@ let testGame2() =
     new PhaserGame(buildConfig myScene)
 
 
-
-
-[<Import("initReact", "./testReact.jsx")>]
-let initReact() = jsNative
-
-
 let runGame =
-    initReact()
     testState()
     testGame2()
 
