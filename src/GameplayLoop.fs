@@ -18,13 +18,7 @@ let PlayCardEvent card =
 let EndTurn() = 
     //notYetImplemented()
     EnemyTurn
-(*
 
-
-
-
-
-*)
 let EnemyAction (enemies:Enemies) : GameplayStates =
     //notYetImplemented()
     ValidateEnemyStatus enemies |> ignore

@@ -5,7 +5,7 @@
     "start": "dotnet fable watch src --run webpack-dev-server",
     "build": "dotnet fable src && webpack",
     "start2": "dotnet fable watch src --run parcel -p 3000",
-    "build2": "dotnet fable src && parcel build",
+    "build2": "dotnet fable src && parcel build ",
     "parcel-watch": "parcel watch",
     "parcel-build": "parcel build",
     "parcel-run": "parcel -p 3000"
@@ -24,20 +24,24 @@
   },
   "version": "1.0.0",
   "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@mui/material": "^5.11.14",
     "path": "^0.12.7",
     "phaser": "^3.55.2",
-    "phaser-ui-tools": "^2.0.0-beta",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "phaser-ui-tools": "^2.0.0-beta"
   },
   "source": [
     "src/main.html",
+    "src/html-assets/frame.html",
+    "src/html-assets/frame2.html",
     "src/assets/battleroom.png",
     "src/assets/sprite1.png",
     "src/assets/sprite2.png",
     "src/assets/sample.png"
   ],
   "targets": {
+    "main" : false,
     "default": {
       "distDir": "./public"
     }

@@ -39,14 +39,18 @@ let myCallback() = (
     console.log("using callback")
 )
 
+//use vscode launch with js debug
 
-//https://photonstorm.github.io/phaser3-docs/Phaser.GameObjects.GameObjectFactory.html
-//https://github.com/jsfehler/phaser-ui-tools
+(*
+    Adding JSX elements to Phaser turned out to be quite messy. So
+    for now i'll work with simple html elements and css styling.
 
-//använd vs code js debug, annars uppdateras inte filerna
+    I'll use a plugin for GUI related functions.
+
+    I might try JSX later.
+*)
 
 
-//gör så enkelt som möjligt med knappar
 type BattleScene() =
     class
         inherit Scene()
@@ -59,22 +63,21 @@ type BattleScene() =
             this.load.image "battleroom" "assets/battleroom.png"
             this.load.image "eye" "assets/sample.png"
             this.load.image "clicktoendturn" "assets/sample.png"
+            this.load.html("frame1", "html-assets/frame2.html")
+            //this.load.htmlTexture "myButton" "assets/sample.html"
         )
         override this.create() = (
             (this.add.image 400 300 "battleroom")
-            let mysprite = (this.add.sprite (200) (200) ("eye"))
-            let mysprite2 = (this.add.sprite (500) (500) ("clicktoendturn"))
-            //let btn = (this.add.dom 400 300 button)
-            //createClickListener button myCallback
-            //myFunc.createClickListener button myCallback
-            mysprite.setInteractive()
-            mysprite2.setInteractive()
-            mysprite.on "pointerdown" (fun _ -> (myPlayerInput <- callbackTintSet(mysprite)))
-            mysprite.on "pointerout" (fun _ -> (myPlayerInput <- callbackTintClear(mysprite)))
-            mysprite.on "pointerup" (fun _ -> (myPlayerInput <- callbackTintClear(mysprite)))
-            mysprite2.on "pointerdown" (fun _ -> (myPlayerInput <- callbackTintSet2(mysprite)))
-            mysprite2.on "pointerout" (fun _ -> (myPlayerInput <- callbackTintClear2(mysprite)))
-            mysprite2.on "pointerup" (fun _ -> (myPlayerInput <- callbackTintClear2(mysprite)))
+            //let mysprite = (this.add.sprite (200) (200) ("eye"))
+            //let mysprite2 = (this.add.sprite (500) (500) ("clicktoendturn"))
+            //let myBtn = getButton()
+            //console.log(myBtn)
+            //let btn = (this.add.dom 400 300)
+            //btn.setElement(new Counter())
+            //btn.setVisible(true)
+            let element = this.add.dom 400 300
+            //console.log(form)
+            element.createFromCache "frame1"
             ()
         )
 

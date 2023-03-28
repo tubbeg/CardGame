@@ -69,65 +69,16 @@ type LoaderWrapper() =
             jsNative
         member this.setBaseURL (url : string) =
             jsNative
+        member this.htmlTexture (url : string) =
+            jsNative
+        member this.html (key:string, url : string) =
+            jsNative
     end
 
 [<Import("InputPlugin", "phaser")>]
 type InputPlugin() =
     class
     end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -146,12 +97,25 @@ type Sprite() =
             jsNative//sadasiijdoa
     end
 
-
-
-
-
-
-
+[<Import("DOMElement", "phaser")>]
+type DOMElement() =
+    class
+        do()
+        member this.addListener (id:string) : unit =
+            jsNative
+        member this.on (id:string) (cb:(unit->unit)) : unit =
+            jsNative
+        member this.createElement (tag:string) (typ:string) (inner:string) : unit =
+            jsNative
+        member this.setVisible (value:bool) : unit =
+            jsNative
+        member this.setElement (value:obj) : unit =
+            jsNative
+        member this.createFromHTML (form:obj) : unit =
+            jsNative
+        member this.createFromCache (form:obj) : unit =
+            jsNative
+    end
 
 [<Import("GameObjectFactory", "phaser")>]
 type GameObjectFactory() =
@@ -163,7 +127,7 @@ type GameObjectFactory() =
             jsNative
         member this.particles (id: string) : ParticleEmitterManager =
             jsNative
-        member this.dom (x:int) (y:int) (id:obj) : obj =
+        member this.dom (x:int) (y:int) : DOMElement =
             jsNative
     end
 
