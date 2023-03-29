@@ -73,6 +73,8 @@ type LoaderWrapper() =
             jsNative
         member this.html (key:string, url : string) =
             jsNative
+        member this.scenePlugin (key:string, url:string, syskey:string, scenekey:string) : unit =
+            jsNative
     end
 
 [<Import("InputPlugin", "phaser")>]
@@ -146,4 +148,7 @@ type Scene() =
         member val input :  InputPlugin = jsNative with get, set
     end
 
-
+[<Import("Game", "phaser")>]
+type PhaserGame (config : obj) =
+    class
+    end

@@ -27,13 +27,17 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@mui/material": "^5.11.14",
+    "babel-preset-solid": "^1.6.16",
     "path": "^0.12.7",
     "phaser": "^3.55.2",
-    "phaser-ui-tools": "^2.0.0-beta"
+    "phaser3-rex-plugins": "^1.1.83",
+    "solid-js": "^1.6.16"
   },
   "source": [
     "src/main.html",
     "src/html-assets/frame.html",
+    "src/html-assets/rpgui.min.js",
+    "src/html-assets/rpgui.min.css",
     "src/html-assets/frame2.html",
     "src/assets/battleroom.png",
     "src/assets/sprite1.png",
@@ -41,7 +45,7 @@
     "src/assets/sample.png"
   ],
   "targets": {
-    "main" : false,
+    "main": false,
     "default": {
       "distDir": "./public"
     }

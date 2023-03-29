@@ -6,6 +6,22 @@ open Fable.Core
 open Fable.Core.JsInterop
 open PhaserSceneExtension
 
+[<Import("RexUIPlugin", "./html-assets/rexuiplugin.min.js")>]
+let RexUI : obj = jsNative
+
+
+let details = createObj [
+    "key" ==> "rexUI"
+    "plugin" ==> RexUI
+    "mapping" ==> "rexUI"
+]
+
+let constructRexPlugin = createObj [
+    "scene" ==> [|
+        details
+        |]
+    ]
+
 
 let buildConfig scene = createObj [
     "parent" ==> "myPhaser"
@@ -25,4 +41,5 @@ let buildConfig scene = createObj [
         ]
     ]
     "scene" ==> scene
+    //"plugins" ==> constructRexPlugin
 ]

@@ -49,7 +49,18 @@ let myCallback() = (
 
     I might try JSX later.
 *)
+[<Import("TextSprite", "phaser-ui-tools")>]
+type TextSprite(game:obj, x:int, y:int, key:string) =
+    class
+        do()
+        member this.setText(label:string, style:obj) = jsNative
+    end
 
+[<ImportDefault("./html-assets/rpgui.min.css")>]
+let rpgStyle : obj = jsNative
+
+[<Import("CountingComponent", "./trysolid.js")>]
+let myComponent() : unit = jsNative
 
 type BattleScene() =
     class
@@ -64,10 +75,16 @@ type BattleScene() =
             this.load.image "eye" "assets/sample.png"
             this.load.image "clicktoendturn" "assets/sample.png"
             this.load.html("frame1", "html-assets/frame2.html")
+
+            //loading plugin though config means that we don't need to preload
+
+            //this.load.scenePlugin("rexuiplugin", 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI')
             //this.load.htmlTexture "myButton" "assets/sample.html"
         )
         override this.create() = (
             (this.add.image 400 300 "battleroom")
+            //let mySprite = new TextSprite(this, 300, 300, "header")
+            //mySprite.setText("myHeader", rpgStyle)
             //let mysprite = (this.add.sprite (200) (200) ("eye"))
             //let mysprite2 = (this.add.sprite (500) (500) ("clicktoendturn"))
             //let myBtn = getButton()
@@ -76,8 +93,9 @@ type BattleScene() =
             //btn.setElement(new Counter())
             //btn.setVisible(true)
             let element = this.add.dom 400 300
+            element.setElement (myComponent())
             //console.log(form)
-            element.createFromCache "frame1"
+            //element.createFromCache "frame1"
             ()
         )
 
