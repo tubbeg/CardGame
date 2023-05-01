@@ -21,7 +21,7 @@ type SceneExt() =
             this.load.image "red" "assets/particles/red.png"
         )
         override this.create() = (
-            this.add.image 400 300 "sky"
+            this.add.image 400 300 "sky" |> ignore
             let myParticles = this.add.particles "red"
             let emitter = myParticles.createEmitter myEmitterConfig
             let logo = this.physics.add.image 400 100 "logo"

@@ -2,8 +2,6 @@
   "private": true,
   "scripts": {
     "postinstall": "dotnet tool restore",
-    "start": "dotnet fable watch src --run webpack-dev-server",
-    "build": "dotnet fable src && webpack",
     "start2": "dotnet fable watch src --run parcel -p 3000",
     "build2": "dotnet fable src && parcel build ",
     "parcel-watch": "parcel watch",
@@ -33,12 +31,9 @@
   },
   "source": [
     "src/main.html",
-    "src/html-assets/frame.html",
-    "src/html-assets/frame2.html",
-    "src/assets/battleroom.png",
-    "src/assets/sprite1.png",
-    "src/assets/sprite2.png",
-    "src/assets/sample.png"
+    "src/assets/star.png",
+    "src/assets/dude.png",
+    "src/assets/platform.png"
   ],
   "targets": {
     "main" : false,

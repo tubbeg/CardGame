@@ -12,7 +12,7 @@ let buildConfig scene = createObj [
     "dom" ==> createObj [
         "createContainer" ==> true
     ]
-    "type" ==> Auto
+    "type" ==> phaserAuto
     "width" ==> 800
     "height" ==> 600
     "physics" ==> createObj [

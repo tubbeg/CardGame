@@ -75,12 +75,6 @@ type LoaderWrapper() =
             jsNative
     end
 
-[<Import("InputPlugin", "phaser")>]
-type InputPlugin() =
-    class
-    end
-
-
 
 
 [<Import("Sprite", "phaser")>]
@@ -117,19 +111,43 @@ type DOMElement() =
             jsNative
     end
 
+
+[<Import("GameObjectFactory", "phaser")>]
+type GameObject() =
+    class
+        do()
+        member val x : int = jsNative with get, set //
+        member val y : int = jsNative with get, set //
+        member this.setInteractive() : unit =
+            jsNative
+    end
+
 [<Import("GameObjectFactory", "phaser")>]
 type GameObjectFactory() =
     class
         do()
         member this.sprite (x:int) (y:int) (texture : string) : Sprite =
             jsNative
-        member this.image (x : int) (y : int) (id: string) =
+        member this.image (x : int) (y : int) (id: string) : GameObject =
             jsNative
         member this.particles (id: string) : ParticleEmitterManager =
             jsNative
         member this.dom (x:int) (y:int) : DOMElement =
             jsNative
     end
+
+
+[<Import("InputPlugin", "phaser")>]
+type InputPlugin() =
+    class
+        member this.on (event:string) (myFunc : _): unit =
+            jsNative
+        member this.setDraggable (gameObj : GameObject) : unit =
+            jsNative
+    end
+
+
+
 
 [<Import("Scene", "phaser")>]
 type Scene() =

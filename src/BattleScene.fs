@@ -50,6 +50,14 @@ let myCallback() = (
     I might try JSX later.
 *)
 
+let inputCallback pointer (gameObject : GameObject) dragX dragY = (
+    gameObject.x <- dragX
+    gameObject.y <- dragY
+)
+
+//Forcing Fable to uncurry the function
+//according to https://github.com/fable-compiler/Fable/issues/2436
+let inputCallbackUncurried = System.Func<_,_,_,_,_> inputCallback
 
 type BattleScene() =
     class
@@ -60,14 +68,20 @@ type BattleScene() =
         
         do()
         override this.preload() = (
-            this.load.image "battleroom" "assets/battleroom.png"
-            this.load.image "eye" "assets/sample.png"
-            this.load.image "clicktoendturn" "assets/sample.png"
-            this.load.html("frame1", "html-assets/frame2.html")
+            this.load.image "battleroom" "assets/platform.png"
+            this.load.image "eye" "assets/star.png"
+            //this.load.image "clicktoendturn" "assets/sample.png"
+            //this.load.html("frame1", "html-assets/frame2.html")
             //this.load.htmlTexture "myButton" "assets/sample.html"
         )
         override this.create() = (
-            (this.add.image 400 300 "battleroom")
+            this.add.image 400 300 "battleroom" |> ignore
+            let a = this.add.image 400 300 "eye"
+            a.setInteractive()
+            this.input.setDraggable(a)
+            //this.onInput("drag", ())
+            //this.onInput2()
+            this.onInput()
             //let mysprite = (this.add.sprite (200) (200) ("eye"))
             //let mysprite2 = (this.add.sprite (500) (500) ("clicktoendturn"))
             //let myBtn = getButton()
@@ -75,26 +89,23 @@ type BattleScene() =
             //let btn = (this.add.dom 400 300)
             //btn.setElement(new Counter())
             //btn.setVisible(true)
-            let element = this.add.dom 400 300
+            //let element = this.add.dom 400 300
             //console.log(form)
-            element.createFromCache "frame1"
+            //element.createFromCache "frame1"
             ()
         )
+        //this is the other way that you can solve the problem
+        [<Emit("this.input.on('drag',(pointer, gameObject, dragX, dragY) =>
+        {gameObject.x = dragX; gameObject.y = dragY;})")>]
+        member this.onInputEmit(event:string, func:_) = ()
+        member this.onInput() = (
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
+            (*let myFunc pointer (gameObject : GameObject) dragX dragY = (
+                gameObject.x <- dragX
+                gameObject.y <- dragY
+            )*)
+            this.input.on "drag" inputCallbackUncurried
+        )
         override this.update() = (
             //player idling should not trigger a state machine update
             //let updatedState : option<GameplayStates> =
