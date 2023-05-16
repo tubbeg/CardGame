@@ -38,6 +38,7 @@ let phaserAuto: IPhaserRender = jsNative
 type  Factory() =
     class
         do()
+        member this.overlap (object1:obj) (object2:obj) (collideCallback:option<_>) (processCallback:option<_>) : unit = jsNative
         member this.image x y id : ImageWithDynamicBody =
             jsNative
     end
@@ -113,13 +114,36 @@ type DOMElement() =
 
 
 [<Import("GameObjectFactory", "phaser")>]
+type InteractiveObject() =
+    class
+        do()
+        member val dropZone : bool = jsNative  with get, set //
+    end
+
+[<Import("GameObjectFactory", "phaser")>]
 type GameObject() =
     class
         do()
         member val x : int = jsNative with get, set //
         member val y : int = jsNative with get, set //
+        member val input : InteractiveObject = jsNative with get, set //
         member this.setInteractive() : unit =
             jsNative
+    end
+[<Import("Body", "phaser")>]
+type ArcadeBody() =
+    class
+        do()
+        member this.setVisible (state:bool) : unit = jsNative
+    end
+
+
+[<Import("Zone", "phaser")>]
+type Zone() =
+    class
+        do()
+        member this.setVisible (state:bool) : unit = jsNative
+        member this.setInteractive () : unit = jsNative
     end
 
 [<Import("GameObjectFactory", "phaser")>]
@@ -134,6 +158,9 @@ type GameObjectFactory() =
             jsNative
         member this.dom (x:int) (y:int) : DOMElement =
             jsNative
+        member this.zone (x:int) (y:int) (width:int) (height:int) : Zone =
+            jsNative
+        
     end
 
 
