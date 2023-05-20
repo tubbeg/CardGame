@@ -12,8 +12,7 @@ open BattleScene
 open GameplayLoop
 
 
-let myScene  =
-    new BattleScene()
+let myScene  = new BattleScene()
 [<Import("Game", "phaser")>]
 type PhaserGame (config : obj) =
     class

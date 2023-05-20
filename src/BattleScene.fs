@@ -19,11 +19,11 @@ let myEmitterConfig = createObj [
 
 let callbackTintSet (sprite : Sprite)  =
     sprite.setTint(0xff0000)
-    EndTurn
+    EndTurnPress
  
 let callbackTintClear (sprite : Sprite) : PlayerInput  =
     sprite.clearTint()
-    EndTurn
+    EndTurnPress
     
 let callbackTintSet2 (sprite : Sprite)  =
     sprite.setTint(0xff0000)
@@ -62,61 +62,68 @@ let myCallback() = (
 
 //https://photonstorm.github.io/phaser3-docs/Phaser.GameObjects.Zone.html
 
+
 type BattleScene() =
     class
         inherit Scene()
         let machine = new BattleStateMachine("bob the dude")
         let mutable myPlayerInput : PlayerInput = GameTypes.PlayerInput.Idle
-        do()
+
         override this.preload() = (
             this.load.image "battleroom" "assets/platform.png"
             this.load.image "eye" "assets/star.png"
+            this.load.image "button" "assets/star.png"
             //this.load.image "clicktoendturn" "assets/sample.png"
             //this.load.html("frame1", "html-assets/frame2.html")
             //this.load.htmlTexture "myButton" "assets/sample.html"
         )
         override this.create() = (
             let myZone = this.add.image 400 300 "battleroom"
+            let myButton = this.add.image 30 30 "button"
+            myButton.setInteractive()
+            myButton.on "pointerup" (System.Func<_,_> (fun () -> (
+                machine.update(Some(EndTurnRelease)) |> ignore)))
+                
             myZone.setInteractive()
             myZone.input.dropZone <- true
-
             let a = this.add.image 15 15 "eye"
             a.setInteractive()
             this.input.setDraggable(a)
-            //this.onInput("drag", ())
-            //this.onInput2()
-            //let myZone = this.add.zone 400 300 400 400
-            //zone is working, due to interactive
             this.onInput()
-            let overlapFunc zone block =
-                console.log("it's overlapping")
-            
-            let ofUncurried = System.Func<_,_,_> overlapFunc
-            this.physics.add.overlap myZone a (Some ofUncurried) None
             ()
         )
-        //this is the other way that you can solve the problem
-        [<Emit("this.input.on('drag',(pointer, gameObject, dragX, dragY) =>
-        {gameObject.x = dragX; gameObject.y = dragY;})")>]
-        member this.onInputEmit(event:string, func:_) = ()
         member this.onInput() = (
-            let inputCallback pointer (gameObject : GameObject) dragX dragY = (
+            let dragcb (pointer : unit) (gameObject : GameObject) dragX dragY = (
                 gameObject.x <- dragX
                 gameObject.y <- dragY
             )
-            let dragEntercb pointer (gameObject : GameObject) dropZone = console.log("hello there")
-            let dragEntercb2 pointer (gameObject : GameObject) dropZone = console.log("goodbye then")
-            //Forcing Fable to uncurry the function
-            //according to https://github.com/fable-compiler/Fable/issues/2436
-            this.input.on "drag" (System.Func<_,_,_,_,_> inputCallback)
-            this.input.on "dragleave" (System.Func<_,_,_,_> dragEntercb)
-            this.input.on "dragenter" (System.Func<_,_,_,_> dragEntercb2)
+            let dropcb (pointer : Pointer) (gameObject : GameObject) dropZone =
+                //should only trigger if drop occurs
+                console.log(pointer.downTime)
+                machine.update(Some (PlayCard Card1 )) |> ignore
+            this.input.on "drag" (System.Func<_,_,_,_,_> dragcb)
+            this.input.on "drop" (System.Func<_,_,_,_> dropcb) //awesome!!
         )
-        override this.update() = (
+        override this.update() = ()
             //player idling should not trigger a state machine update
             //let updatedState : option<GameplayStates> =
-            match (myPlayerInput : GameTypes.PlayerInput) with
-            | Idle -> None
-            | (action : GameTypes.PlayerInput) -> machine.update(Some(action))
-        )
+
+            //enemy turns are no longer states, not sure if this is correct
+
+            //but the program seems to behave in correct way
+
+        (*
+            Only player input should trigger a state machine update. Otherwise,
+            the update function will have to do a lot of unnecessary lifting.
+
+            
+
+            Also another basic tip, edit the generated js files if you want to
+            do some prototyping. This way you can figure out what you need, without
+            defining types. And then later append types to F# (which makes it
+            slightly easier to scale the application)
+
+        *)
+
+
     end

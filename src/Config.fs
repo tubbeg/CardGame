@@ -25,4 +25,8 @@ let buildConfig scene = createObj [
         ]
     ]
     "scene" ==> scene
+    "fps" ==> createObj [
+        "target" ==> 60 //use 1 for debug
+        "forceSetTimeOut" ==> true
+    ]
 ]

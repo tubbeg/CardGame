@@ -129,6 +129,8 @@ type GameObject() =
         member val input : InteractiveObject = jsNative with get, set //
         member this.setInteractive() : unit =
             jsNative
+        member this.on (event:string) (myFunc : _): unit =
+            jsNative
     end
 [<Import("Body", "phaser")>]
 type ArcadeBody() =
@@ -163,6 +165,14 @@ type GameObjectFactory() =
         
     end
 
+
+
+[<Import("Pointer", "phaser")>]
+type Pointer() =
+    class
+        do()
+        member val downTime : int = jsNative with get, set
+    end
 
 [<Import("InputPlugin", "phaser")>]
 type InputPlugin() =

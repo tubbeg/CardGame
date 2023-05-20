@@ -28,12 +28,13 @@ type Passives =
 
 type GameplayStates =
     //| Init
-    | EnemyTurn
+    //| EnemyTurn
     | PlayerTurn
 and EndGame =
     | Win
     | GameOver
 and PlayerInput =
     | PlayCard of Card
-    | EndTurn
+    | EndTurnPress
+    | EndTurnRelease
     | Idle
