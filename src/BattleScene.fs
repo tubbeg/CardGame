@@ -52,15 +52,15 @@ let myCallback() = (
 
 
 
-//todo for ui
+//todo 
 
-//1. add zone
+//add cards
 
-//2. add checker for sprite (card) in zone
-
-//3. add visual feedback for checker
+//add health bars for player and npc
 
 //https://photonstorm.github.io/phaser3-docs/Phaser.GameObjects.Zone.html
+
+
 
 
 type BattleScene() =
@@ -68,7 +68,18 @@ type BattleScene() =
         inherit Scene()
         let machine = new BattleStateMachine("bob the dude")
         let mutable myPlayerInput : PlayerInput = GameTypes.PlayerInput.Idle
+        let createCards (numberOfCards : int) (gameClass : PlayableClasses) : Card list = (
+            let myList : Card list = [for i in 0 .. numberOfCards -> (Card1)]
+            myList
+        )
 
+        member this.createZone() = ()
+        member this.createCard x y key = (
+            let myCard = this.add.image x y key
+            myCard.setInteractive()
+            this.input.setDraggable(myCard)
+            myCard
+        )
         override this.preload() = (
             this.load.image "battleroom" "assets/platform.png"
             this.load.image "eye" "assets/star.png"
@@ -76,23 +87,26 @@ type BattleScene() =
             //this.load.image "clicktoendturn" "assets/sample.png"
             //this.load.html("frame1", "html-assets/frame2.html")
             //this.load.htmlTexture "myButton" "assets/sample.html"
+
         )
+
+
         override this.create() = (
+            //each enemy npc has to be its own dropzone
             let myZone = this.add.image 400 300 "battleroom"
             let myButton = this.add.image 30 30 "button"
             myButton.setInteractive()
             myButton.on "pointerup" (System.Func<_,_> (fun () -> (
                 machine.update(Some(EndTurnRelease)) |> ignore)))
-                
+            let myList = [for i in 0 .. 10 -> (this.add.image 30 30 "button")]
             myZone.setInteractive()
             myZone.input.dropZone <- true
-            let a = this.add.image 15 15 "eye"
-            a.setInteractive()
-            this.input.setDraggable(a)
+            let a = [for i in 0 .. 100 -> (this.createCard (50+i) (50+i) "eye")]
             this.onInput()
             ()
         )
         member this.onInput() = (
+            
             let dragcb (pointer : unit) (gameObject : GameObject) dragX dragY = (
                 gameObject.x <- dragX
                 gameObject.y <- dragY

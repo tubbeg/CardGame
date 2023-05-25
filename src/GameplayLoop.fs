@@ -11,14 +11,25 @@ let ValidatePlayerStatus player = None //check that player is alive
 let ValidateEnemyStatus enemies = None //check that enemies are alive
 
 
-let PlayCardEvent card =
+let PlayCardEvent card player1 (enemies : Enemies) =
     //notYetImplemented()
-    PlayerTurn
+    let playerUpdate = {Id=player1.Id;Health=(player1.Health);Mana=player1.Mana} //to be fixed
+    //console.log(playerUpdate)
+    let enemy =
+        match enemies with
+            | [e] -> {Id=e.Id;Health=(e.Health-10);Mana=e.Mana}
+            | _ -> {Id="Error"; Health=0;Mana=0}
+    //console.log("enemy health")
+    //console.log(enemy.Health)
+    let enemyUpdate = [enemy]  //notyetimplemented
+    PlayerTurn, playerUpdate, enemyUpdate
 
-let EnemyAction (enemies:Enemies) : GameplayStates =
-    //notYetImplemented()
+let EnemyAction (player1 : Player) (enemies:Enemies) : GameplayStates*Player*Enemies =
     ValidateEnemyStatus enemies |> ignore
-    PlayerTurn
+    let playerUpdate = {Id=player1.Id;Health=(player1.Health - 10);Mana=player1.Mana}
+    let enemyUpdate = enemies //notyetimplemented
+    //should add enemies as return value as well since they can hurt themselves
+    PlayerTurn, playerUpdate, enemyUpdate
 
 //the state machine should not govern the playerinput, but simply respond to it
 type BattleStateMachine(playerName) =
@@ -26,7 +37,7 @@ type BattleStateMachine(playerName) =
         do ()
         let mutable turn : GameplayStates = PlayerTurn //default to player
         let mutable player : Player = {Id=playerName;Health=100;Mana=250}
-        let mutable enemies : Enemies = [||] //initialize to empty array
+        let mutable enemies : Enemies = [{Id="Monster";Health=100;Mana=250}] //initialize to empty array
         //this might need to be an asynchronous function, since it has to wait for animations
         //fix this later
 
@@ -34,7 +45,11 @@ type BattleStateMachine(playerName) =
         let enemyTurn() =
             console.log("enemy turn")
             console.log("enemy does something!")
-            turn <- EnemyAction enemies
+            let state, p, e =  EnemyAction player enemies  
+            turn <- state
+            player <- p
+            enemies <- e
+            console.log(player)
             //console.log("current state is : " + turn.ToString())
             turn
         let EndTurnFunc() = 
@@ -53,7 +68,12 @@ type BattleStateMachine(playerName) =
                     Some(turn))
                 | PlayCard(card), PlayerTurn -> (
                     console.log("player play card")
-                    turn <- PlayCardEvent(card)
+                    let state, p, e = PlayCardEvent card player enemies
+                    turn <- state
+                    player <- p
+                    enemies <- e
+                    console.log("enemy status:")
+                    console.log(enemies)
                     Some(turn))
                 (*| _, EnemyTurn -> (
                     console.log("enemy turn")

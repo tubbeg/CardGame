@@ -11,6 +11,10 @@ type PlayableClasses =
 
 type Card =
     | Card1
+    | Card2
+    | Card3
+    | Card4
+    | Card5
 
 type Deck = Cards of Card array
 
@@ -20,7 +24,7 @@ type NPC = {
     Mana : int
 }
 and Player = NPC
-and Enemies = NPC array
+and Enemies = NPC list
 type Passives =
     | Passive1
     | Passive2
