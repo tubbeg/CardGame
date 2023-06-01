@@ -13,8 +13,8 @@ let buildConfig scene = createObj [
         "createContainer" ==> true
     ]
     "type" ==> phaserAuto
-    "width" ==> 800
-    "height" ==> 600
+    "width" ==> 1600
+    "height" ==> 800
     "physics" ==> createObj [
         "default" ==> "arcade"
         "arcade" ==> createObj [

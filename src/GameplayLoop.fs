@@ -55,7 +55,7 @@ type BattleStateMachine(playerName) =
         let EndTurnFunc() = 
         //notYetImplemented()
             enemyTurn()
-        member this.update (playerinput : option<PlayerInput>) : option<GameplayStates>  = (
+        member this.update (playerinput : option<PlayerInput>) : option<GameplayStates*Player*Enemies>  = (
 
             match playerinput with
             | Some(input) -> (
@@ -65,7 +65,7 @@ type BattleStateMachine(playerName) =
                     console.log("player end turn")
                     turn <- EndTurnFunc() //enemy turn is no longer a state
                     //console.log("current state is : " + turn.ToString())
-                    Some(turn))
+                    Some(turn,player,enemies))
                 | PlayCard(card), PlayerTurn -> (
                     console.log("player play card")
                     let state, p, e = PlayCardEvent card player enemies
@@ -74,7 +74,7 @@ type BattleStateMachine(playerName) =
                     enemies <- e
                     console.log("enemy status:")
                     console.log(enemies)
-                    Some(turn))
+                    Some(turn,player,enemies))
                 (*| _, EnemyTurn -> (
                     console.log("enemy turn")
                     turn <- EnemyAction enemies
@@ -88,6 +88,6 @@ type BattleStateMachine(playerName) =
                 )
             | _ -> (
                 eprintfn "error missing input"
-                Some(turn))
+                None)
         )
     end

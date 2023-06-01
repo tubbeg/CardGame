@@ -26,15 +26,19 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@mui/material": "^5.11.14",
+    "babel-preset-solid": "^1.7.4",
     "path": "^0.12.7",
     "phaser": "^3.55.2",
-    "phaser-ui-tools": "^2.0.0-beta"
+    "phaser-ui-tools": "^2.0.0-beta",
+    "solid-js": "^1.7.6"
   },
   "source": [
     "src/main.html",
     "src/assets/star.png",
     "src/assets/dude.png",
-    "src/assets/platform.png"
+    "src/assets/platform.png",
+    "src/assets/healthbar.html",
+    "src/html-assets/rpgui.min.js"
   ],
   "targets": {
     "main": false,

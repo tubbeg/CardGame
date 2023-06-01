@@ -4,6 +4,7 @@ open Browser.Dom
 open Fable.Core
 open Fable.Core.JsInterop
 open System.IO
+open Browser.Types
 
 type IPhaserRender = 
     | Auto
@@ -104,11 +105,18 @@ type DOMElement() =
             jsNative
         member this.setVisible (value:bool) : unit =
             jsNative
+        member this.setActive (value:bool) : unit =
+            jsNative
+        member this.getChildByID (name:string) : option<HTMLElement> =
+            jsNative
+        //this should definitely be a return type with an option
+        member this.getChildByName (name:string) : option<HTMLElement> =
+            jsNative
         member this.setElement (value:obj) : unit =
             jsNative
-        member this.createFromHTML (form:obj) : unit =
+        member this.createFromHTML (form:obj) : DOMElement =
             jsNative
-        member this.createFromCache (form:obj) : unit =
+        member this.createFromCache (form:obj) : DOMElement =
             jsNative
     end
 
