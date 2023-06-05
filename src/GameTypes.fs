@@ -34,9 +34,10 @@ type GameplayStates =
     //| Init
     //| EnemyTurn
     | PlayerTurn
-and EndGame =
+and GameStatus =
     | Win
     | GameOver
+    | Running
 and PlayerInput =
     | PlayCard of Card
     | EndTurnPress
