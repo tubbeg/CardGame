@@ -78,6 +78,25 @@ type LoaderWrapper() =
     end
 
 
+[<Import("GameObjectFactory", "phaser")>]
+type InteractiveObject() =
+    class
+        do()
+        member val dropZone : bool = jsNative  with get, set //
+    end
+
+[<Import("GameObjectFactory", "phaser")>]
+type GameObject() =
+    class
+        do()
+        member val x : int = jsNative with get, set //
+        member val y : int = jsNative with get, set //
+        member val input : InteractiveObject = jsNative with get, set //
+        member this.setInteractive() : unit =
+            jsNative
+        member this.on (event:string) (myFunc : _): unit =
+            jsNative
+    end
 
 [<Import("Sprite", "phaser")>]
 type Sprite() =
@@ -96,6 +115,7 @@ type Sprite() =
 [<Import("DOMElement", "phaser")>]
 type DOMElement() =
     class
+        inherit GameObject()
         do()
         member this.addListener (id:string) : unit =
             jsNative
@@ -121,25 +141,6 @@ type DOMElement() =
     end
 
 
-[<Import("GameObjectFactory", "phaser")>]
-type InteractiveObject() =
-    class
-        do()
-        member val dropZone : bool = jsNative  with get, set //
-    end
-
-[<Import("GameObjectFactory", "phaser")>]
-type GameObject() =
-    class
-        do()
-        member val x : int = jsNative with get, set //
-        member val y : int = jsNative with get, set //
-        member val input : InteractiveObject = jsNative with get, set //
-        member this.setInteractive() : unit =
-            jsNative
-        member this.on (event:string) (myFunc : _): unit =
-            jsNative
-    end
 [<Import("Body", "phaser")>]
 type ArcadeBody() =
     class
@@ -162,11 +163,11 @@ type GameObjectFactory() =
         do()
         member this.sprite (x:int) (y:int) (texture : string) : Sprite =
             jsNative
-        member this.image (x : int) (y : int) (id: string) : GameObject =
+        member this.image ((x : int), (y : int), (id: string)) : GameObject =
             jsNative
         member this.particles (id: string) : ParticleEmitterManager =
             jsNative
-        member this.dom (x:int) (y:int) : DOMElement =
+        member this.dom ((x:int), (y:int)) : DOMElement =
             jsNative
         member this.zone (x:int) (y:int) (width:int) (height:int) : Zone =
             jsNative

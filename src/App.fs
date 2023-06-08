@@ -19,13 +19,6 @@ type PhaserGame (config : obj) =
     end
 
 
-let testState() =
-    console.log("Creating machine")
-    let machine = new BattleStateMachine("bob the player")
-    console.log("Created machine")
-
-
-
 let testGame2() =
     new PhaserGame(buildConfig myScene)
 
@@ -34,7 +27,7 @@ let runGame =
     //let a = document.getElementById "hp-bar2"
     //let b: Browser.Types.HTMLElement = document.getElementById "mana-bar2"
     //a.dataset.Item "value" <- "0.3" //this successfully updates the progress, but does not yield any visual update...why?
-    testState()
+    //testState()
     testGame2()
                 
 

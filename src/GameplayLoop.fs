@@ -11,22 +11,59 @@ let ValidatePlayerStatus player = None //check that player is alive
 let ValidateEnemyStatus enemies = None //check that enemies are alive
 
 let damageAllCharacters (l : NPC list) damage =
-    l |> List.map (fun e -> {Id=e.Id;Health=e.Health-damage;Mana=e.Mana})
+    l |> List.map (fun e ->
+        {
+        Id=e.Id
+        ;Health=e.Health-damage
+        ;Mana=e.Mana
+        ;Location=e.Location
+        ;Type=Enemy})
+
 
 
 let seriousDamage = 30
 
-let PlayCardEvent card player1 (enemies : Enemies) =
+
+
+
+
+let isIdenticalNPC n1 (n2 : NPC) =
+    match n2.Location with
+    | l when (l=n1.Location) -> true
+    | _ -> false
+
+let damageEnemy enemy enemies damage : Enemies =
+    enemies |> List.map(fun e -> (
+        match (isIdenticalNPC e enemy) with
+        | true -> {Id=e.Id;Health=e.Health - damage;Mana=e.Mana;Location=e.Location;Type=e.Type}
+        | false -> e
+    ))
+
+
+let PlayCardEvent card (target : option<NPC>) player1 (enemies : Enemies) =
     //cards played may also affect the player
-    let playerUpdate = {Id=player1.Id;Health=(player1.Health);Mana=player1.Mana} //to be fixed
+    let playerUpdate =
+        {Id=player1.Id
+        ;Health=(player1.Health)
+        ;Mana=player1.Mana
+        ;Location=player1.Location
+        ;Type=Enemy} //to be fixed
     //cards may affect one enemy or several, this needs to be fixed
-    let enemyUpdate : Enemies = damageAllCharacters enemies seriousDamage //notyetimplemented
-    PlayerTurn, playerUpdate, enemyUpdate
+    let (eupdate : Enemies) =
+        match target with
+        | Some(npc) -> (damageEnemy npc enemies 30)
+        | _ -> damageAllCharacters enemies seriousDamage //notyetimplemented
+    PlayerTurn, playerUpdate, eupdate
 
 
 let EnemyAction (player1 : Player) (enemies:Enemies) : GameplayStates*Player*Enemies =
     ValidateEnemyStatus enemies |> ignore
-    let playerUpdate = {Id=player1.Id;Health=(player1.Health - 10);Mana=player1.Mana}
+    let playerUpdate =
+        {Id=player1.Id
+        ;Health=(player1.Health - 10)
+        ;Mana=player1.Mana
+        ;Location=player1.Location
+        ;Type=Player}
     let enemyUpdate = enemies //notyetimplemented
     //should add enemies as return value as well since they can hurt themselves
     PlayerTurn, playerUpdate, enemyUpdate
@@ -53,7 +90,7 @@ type BattleStateMachine(playerName) =
     class
         do ()
         let mutable turn : GameplayStates = PlayerTurn //default to player
-        let mutable player : Player = {Id=playerName;Health=100;Mana=250}
+        let mutable player : Player = {Id=playerName;Health=100;Mana=250;Location=Some(Position1);Type=Player}
         let mutable enemies : Enemies = [] //initialize to empty list
         //fix this later
         let mutable gameStatus : GameStatus = Running
@@ -74,7 +111,7 @@ type BattleStateMachine(playerName) =
         //notYetImplemented()
             enemyTurn()
 
-        member this.validateInput playerinput =
+        let validateInput playerinput =
             match (playerinput, turn, isAlive player, areAlive enemies) with
                 | _,_,true, false ->
                     gameStatus <- Win
@@ -89,9 +126,9 @@ type BattleStateMachine(playerName) =
                     //console.log("current state is : " + turn.ToString())
                     gameStatus <- validateGameStatus player enemies
                     Some(gameStatus, turn,player,enemies)
-                | PlayCard(card), PlayerTurn, true, true ->
+                | PlayCard(card, target), PlayerTurn, true, true ->
                     console.log("player play card")
-                    let state, p, e = PlayCardEvent card player enemies
+                    let state, p, e = PlayCardEvent card target  player enemies
                     turn <- state
                     player <- p
                     enemies <- e
@@ -105,14 +142,26 @@ type BattleStateMachine(playerName) =
                 | EndTurnPress, PlayerTurn, true, true ->
                     None
         //this might need to be an asynchronous function, since it has to wait for animations
-        member this.initialize() =
-            let createEnemies = [for i in 1 .. 3 -> {Id="Monster" + string(i);Health=100;Mana=250}]
+        member this.initialize(config : option<int>) : GameData =
+            //need a proper function for spawning enemies
+
+            //the number of enemies has to be static
+
+            let createEnemies: NPC list = [
+                for i in 1 .. 3 ->
+                    let e = {Id="Monster" + string(i);Health=100;Mana=250;Location=Some(Position2);Type=Enemy}
+                    match i with
+                    | 1 -> {Id=e.Id;Health=e.Health;Mana=e.Mana;Location=Some(Position3);Type=Enemy}
+                    | 2 -> {Id=e.Id;Health=e.Health;Mana=e.Mana;Location=Some(Position4);Type=Enemy}
+                    | _ -> e
+                ]
             enemies <- createEnemies
-        member this.update (playerinput : option<PlayerInput>)  =
+            Some(gameStatus, turn, player, enemies)
+        member this.update (playerinput : option<PlayerInput>) : GameData  =
 
             match playerinput, gameStatus with
             | Some input,Running ->
-                this.validateInput input
+                validateInput input
             | _, GameOver ->
                 Some(gameStatus, turn, player, enemies)
             | _, Win ->
