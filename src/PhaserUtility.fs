@@ -92,7 +92,13 @@ type GameObject() =
         member val x : int = jsNative with get, set //
         member val y : int = jsNative with get, set //
         member val input : InteractiveObject = jsNative with get, set //
+        member this.setData(obj: obj) =
+            jsNative
+        member this.getData(obj: obj) =
+            jsNative
         member this.setInteractive() : unit =
+            jsNative
+        member this.removeInteractive() : unit =
             jsNative
         member this.on (event:string) (myFunc : _): unit =
             jsNative
@@ -152,9 +158,10 @@ type ArcadeBody() =
 [<Import("Zone", "phaser")>]
 type Zone() =
     class
+        inherit GameObject()
         do()
-        member this.setVisible (state:bool) : unit = jsNative
-        member this.setInteractive () : unit = jsNative
+        //member this.setVisible (state:bool) : unit = jsNative
+        //member this.setInteractive () : unit = jsNative
     end
 
 [<Import("GameObjectFactory", "phaser")>]

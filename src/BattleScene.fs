@@ -25,20 +25,15 @@ let callbackTintSet (sprite : Sprite)  =
 let callbackTintClear (sprite : Sprite) : PlayerInput  =
     sprite.clearTint()
     EndTurnPress
-    
+(* 
 let callbackTintSet2 (sprite : Sprite)  =
     sprite.setTint(0xff0000)
-    PlayCard(Card1, None)
+    PlayCard(Some(Card1), None)
  
 let callbackTintClear2 (sprite : Sprite) : PlayerInput  =
     sprite.clearTint()
-    PlayCard(Card1, None)
-
-
-
-let myCallback() = (
-    console.log("using callback")
-)
+    PlayCard(Some(Card1), None)
+*)
 
 //use vscode launch with js debug
 
@@ -73,7 +68,6 @@ let createZone(zone : GameObject) = (
     zone.input.dropZone <- true
 )
 
-let errorNPC: NPC = {Id="Error";Health=(-1);Mana=(-1);Location=None;Type=Player}
 
 let updateProgressBar (root : option<DOMElement>) newvalue =
     match root with
@@ -91,17 +85,23 @@ type Coordinate = int*int
 type Avatar =
     | Element of DOMElement
     | Image of GameObject
-type PositionMap =
+type InterfaceInfo =
     {Location:option<Position>
     ;Avatar:Coordinate*option<Avatar>
     ;Bar:Coordinate*option<DOMElement>}
+and PositionMap = option<InterfaceInfo>
 let hasPosition emap (enemy : NPC) =
-    match enemy.Location with
-    | None -> false
-    | Some(location) ->
-        match emap.Location with
-        | Some(l) when (l=location) -> true
-        | _ -> false
+    match emap with
+    | Some(map) ->
+        match enemy.Location with
+        | None -> false
+        | Some(location) ->
+            match map.Location with
+            | Some(l) when (l=location) -> true
+            | _ -> false
+    | _ ->
+        console.log("Error! Missing position map!")
+        false
 
 let getPosMap (enemy : NPC) (mlist : PositionMap list) : option<PositionMap> =
     try
@@ -114,7 +114,41 @@ let getPosMap (enemy : NPC) (mlist : PositionMap list) : option<PositionMap> =
             eprintfn "failure in getting position! %A" ex
             None
 
+let cardKey = "card"
+let locationKey = "location"
 
+let setGameObjectLocation (object : GameObject) (npc : NPC) : unit =
+    //console.log("Setting game location: " + npc.Location.ToString())
+    let data = createObj [
+        locationKey ==> npc.Location
+    ]
+    object.setData data
+
+let setGameObjectCard (object : GameObject) (c : Card) : unit =
+    let data = createObj [
+        cardKey ==> c
+    ]
+    object.setData data
+
+let setGameObjectZone (object : GameObject) : unit =
+    let data = createObj [
+        "zone" ==> "zone"
+    ]
+    object.setData data
+
+
+let determineCard (gameobj : GameObject) : option<Card> =
+    gameobj.getData(cardKey)
+
+let determineTarget (object : GameObject) : option<Position> =
+    match object.getData(locationKey) with
+    | Some(p) -> p
+    | None -> 
+        match object.getData("zone") with
+        | Some(z) -> Some(AllCharacters)
+        | _ ->
+            console.error("Missing game data!")
+            None
 
 
 type BattleScene() =
@@ -127,60 +161,95 @@ type BattleScene() =
 
         //static coordinates for npc's, this limitation also means
         //that the number of enemies has to be static. But this is acceptable
-        let mutable playerCoordinate =
-            {Location=Some(Position1);Avatar=(300,400), None;Bar=(300,300),None}
+        let mutable playerCoordinate : PositionMap =
+            Some
+                {Location=Some(PlayerPosition)
+                ;Avatar=(300,400), None
+                ;Bar=(300,300),None}
         let mutable enemyCoordinates = 
-            [ {Location=Some(Position2);Avatar=(800, 300), None;Bar=(800,200), None}
-            ; {Location=Some(Position3);Avatar=(800,500), None;Bar=(800,400), None}
-            ; {Location=Some(Position4);Avatar=(800,700), None;Bar=(800,600), None}]
-        let endturnCoordinate =  (450,450)
+            [ Some{Location=Some(Position2);Avatar=(800, 300), None;Bar=(800,200), None}
+            ; Some{Location=Some(Position3);Avatar=(800,500), None;Bar=(800,400), None}
+            ; Some{Location=Some(Position4);Avatar=(800,700), None;Bar=(800,600), None}
+            ; Some{Location=Some(Position4);Avatar=(800,900), None;Bar=(800,800), None}
+            ; Some{Location=Some(Position4);Avatar=(800,1100), None;Bar=(800,1000), None}]
 
-        let cardsCoordinate = (450,800)
+        let centerCoordinate : PositionMap =
+            Some
+                {Location=Some(AllCharacters)
+                ;Avatar=(300,400), None
+                ;Bar=(300,300),None}
+        let endturnCoordinate =  (300,450)
 
-        //let createCards (numberOfCards : int) (gameClass : PlayableClasses) : Card list =
-        //    [for i in 0 .. numberOfCards -> (Card1)]
+        let battleResultCoordinate  = (450,450)
+        let mutable battleResult = None
+
+        let cardsCoordinate = 750, 700
 
         member this.createButton (element : GameObject) =
+            let func input = this.updateUI input
             element.setInteractive()
-            element.on "pointerup" (System.Func<_,_> (fun () ->
-                this.updateUI(Some EndTurnRelease)))
+            element.on "pointerup" (System.Func<_,_> (fun () -> func (Some EndTurnRelease)))
         //this should be a member function which updates the UI based on machine data
         member this.updateUI(action) =
+            let updateResult result =
+                match battleResult with
+                | None ->
+                    battleResult <- this.addWinLoseUI result
+                | _ -> ()
             match machine.update(action) with
                 | Some(s,t,p,enemies) ->
+                    this.updateHealthbars p enemies
                     match s with
-                    | Running ->
-                        match p, enemies with
-                        | p, enemies -> //this will break
-                            this.updateHealthbars  p enemies
-                        //| _ ->  console.log("missing health property!")
-                    | Win ->
-                        console.log("player won the game!")
-                        console.log("note to self: fix UI elements for win/lose conditions")
-                    | GameOver ->
-                        console.log("player lost the game :/")
-                        console.log("note to self: fix UI elements for win/lose conditions")
+                    | Some(Running) ->
+                        ()
+                    | Some(Win) ->
+                        updateResult "win"
+                    | Some(GameOver) ->
+                        updateResult "gameoverman"
+                    | None ->
+                        console.error("Cannot update UI because the state machine is uninitialized!")
+                        ()
                     
-                | None ->
-                    console.log("error! in update ui to statemachine!")
+                | _ ->
+                    console.error("error! in update ui to statemachine!")
+
+        member this.addWinLoseUI (status : string) : option<DOMElement> =
+            Some((this.add.dom battleResultCoordinate).createFromCache status)
+
+            
         
         member this.updateHealthbars player (enemies : Enemies) =
+            let disableNPConDeath posmap npc =
+                let _, avatarRoot = posmap.Avatar
+                match npc.Life, avatarRoot with
+                | Dead, Some(Image(r)) ->  
+                    r.removeInteractive()
+                | _ ->
+                    ()
             enemies |> List.iter(
                 fun e ->   
                     match (getPosMap e enemyCoordinates) with
-                    | None -> console.log("error in getting map!")
-                    | Some(m) ->
+                    | Some(Some(m)) ->
                         let _, root = m.Bar
+                        disableNPConDeath m e
                         updateProgressBar root e.Health
+                    | _ -> console.error("error in getting map!")
             )
-            let _,playerroot = playerCoordinate.Bar
-            updateProgressBar playerroot player.Health
-        member this.createCard x y key = (
+            match playerCoordinate with
+            | Some (pc) ->
+                let _,playerroot = pc.Bar
+                disableNPConDeath pc player
+                updateProgressBar playerroot player.Health
+            | _ -> console.error("Error! Player position map is missing!")
+        member this.createCard (x, y) key card =
+            console.log("Reminder to add different elements/images for each card")
             let myCard = this.add.image (x, y, key)
             myCard.setInteractive()
             this.input.setDraggable(myCard)
+            setGameObjectCard myCard card
+            //console.log("Created card")
             myCard
-        )
+        
         override this.preload() =
             this.load.image "battleroom" "assets/platform.png"
             this.load.image "card" "assets/star.png"
@@ -191,78 +260,109 @@ type BattleScene() =
             this.load.html ("endturn", "assets/endturn.html")
             this.load.html ("enemy", "assets/enemy.html")
 
-        member this.recreateNPC (p : PositionMap) (npc : NPC) avatarkey =
-            let barcoord, _ = p.Bar
-            let bar = (this.add.dom barcoord).createFromCache "healthbar"
-            let avatarcoord, _ = p.Avatar
-            let x,y = avatarcoord
-            let avatar = (this.add.image (x,y,avatarkey))
-            //let avatar = (this.add.dom avatarcoord).createFromCache avatarkey
-            match npc.Type with
-            | Enemy -> (avatar |> createZone)
-            | _ -> ()
-            {Location=p.Location; Avatar=avatarcoord, Some(Image avatar); Bar=barcoord, Some(bar)}
+        member this.recreateNPC (p : PositionMap) (npc : NPC) (avatarkey) : PositionMap =
+            match p with 
+            | Some(pmap) ->
+                let barcoord, _ = pmap.Bar
+                let bar = (this.add.dom barcoord).createFromCache "healthbar"
+                let avatarcoord, _ = pmap.Avatar
+                let x,y = avatarcoord
+                let avatar = (this.add.image (x,y,avatarkey))
+                setGameObjectLocation avatar npc
+                //let avatar = (this.add.dom avatarcoord).createFromCache avatarkey
+                match npc.Type with
+                | Enemy -> (avatar |> createZone)
+                | _ -> ()
+                Some ({Location=pmap.Location
+                ; Avatar=avatarcoord, Some(Image avatar)
+                ; Bar=barcoord, Some(bar)})
+            | _ -> None
 
         member this.initEnemies (enemies : Enemies) =
-            let newlist : PositionMap list = enemies |> List.map(fun e ->
-                let pm = getPosMap e enemyCoordinates
-                match pm with
+            let createForEachNPC npc = 
+                match (getPosMap npc enemyCoordinates) with
                 | Some(p) ->
-                    this.recreateNPC p e "card"
-                | None -> 
-                    {Location=None; Avatar=(0,0), None; Bar=(0,0), None}
-                )
-            enemyCoordinates <- newlist
+                    this.recreateNPC p npc "card"
+                | None ->
+                    console.error("Missing position map!")
+                    None
+            enemyCoordinates <- enemies |> List.map(fun e -> createForEachNPC e)
             //NPCtoUI <- newlist
         member this.initPlayer (player : Player) =
+            console.log("Reminder to fix custom image for the player")
             playerCoordinate <- this.recreateNPC playerCoordinate player "card"
-            ()
         member this.initCards() =
-            //this function should be affected by playable class as well as
-            let cards = [for i in 0 .. 30 -> (this.createCard (60+i+5) (60+i) "card")]
-            ()
-
+            //the state machine is responsible for managing decks and classes
+            //(essentially all game data, or non-ui stuff)
+            let deck = machine.generateDeck(machine.getClass())
+            console.log("Deck is: ")
+            console.log(deck)
+            match deck with
+            | None -> console.error("Error! In recieving generated deck!")
+            | Some(d) ->
+                d |> List.iter(fun c ->
+                    (this.createCard cardsCoordinate "card" c) |> ignore
+                )
+        
         member this.initEndTurn() = 
             let el = (this.add.dom endturnCoordinate).createFromCache "endturn"
             this.createButton el
             
-
-        
-
         //probably going to need a table for keeping track of each UI element to each
         //record
         override this.create() =
             //create healthbars
-            let gameData : GameData = machine.initialize(None)
+            let gameData = machine.initialize(None)
             let createUIforNPC (data : GameData) =
                 match data with
                 | None -> console.log("Error! Missing game data!")
                 | Some(d) ->
                     let status, turn, player, enemies = d
-                    //create ui elements for each player and npc
                     this.initPlayer player
                     this.initEnemies enemies
-                    //each enemy npc has to be its own dropzone
-                    //createZone(this.add.image (400, 300, "battleroom"))
-                    //let enemyhp, playerhp =
-                     //   (this.add.dom (600, 600)).createFromCache("healthbar"), (this.add.dom (500, 500)).createFromCache("healthbar")
+                    this.updateHealthbars player enemies
                     this.addDragAndDrop(None)
-                    //createButton  ((this.add.dom 900 400).createFromCache "endturn")enemyhp playerhp
                     this.initEndTurn()
                     this.initCards()
             createUIforNPC gameData
         member this.addDragAndDrop(config : option<int>) =
             
+            //cards which affect all enemies, or all characters needs a dropzone in the
+            //center of the scene
+
+            //what makes this a bit more complicated is that which dropzone that can
+            //be used depends on the card
+
+            //all-cards should play if
+
+            //enemy-specific target cards should retract to hand if no target or an all
+            //target is selected
+
+            //create a dropzone specifically for Position.AllEnemies and Position.AllCharacters
+            let addCenterZone() =
+                match centerCoordinate with
+                | Some(c) ->
+                    let (x,y), _ = c.Avatar
+                    let newObject = this.add.zone x y 500 500
+                    newObject |> createZone
+                    setGameObjectZone newObject
+                | _ -> console.error("Failed to create center zone!")
+            addCenterZone()
+
             let dragcb (pointer : unit) (gameObject : GameObject) dragX dragY =
                 gameObject.x <- dragX
                 gameObject.y <- dragY
-            let dropcb (pointer : Pointer) (gameObject : GameObject) dropZone =
+            let dropcb (pointer : Pointer) (gameObject : GameObject) (dropZone : Zone) =
                 //should only trigger if drop occurs
-                //console.log(pointer.downTime)
-                this.updateUI(Some (PlayCard (Card1, None)))
+                
+                console.log("Reminder to remove dropzones for dead enemies")
+                let target = determineTarget dropZone
+                let card = determineCard gameObject
+                this.updateUI(Some (PlayCard (card, target)))
             this.input.on "drag" (System.Func<_,_,_,_,_> dragcb)
             this.input.on "drop" (System.Func<_,_,_,_> dropcb)
-        //override this.update() = ()
+
+
             //player idling should not trigger a state machine update
             //let updatedState : option<GameplayStates> =
 
